@@ -9,13 +9,45 @@ let markdown = '';
 
 const $ = (id) => document.getElementById(id);
 
+function sanitizeDownloadFilename(name, fallback = 'document') {
+  const base = String(name || fallback)
+    .replace(/\.(pdf|docx|pptx?|png|jpe?g|webp|gif|bmp|tiff?|xlsx?|csv|tsv|txt|md|markdown|html?|epub)$/i, '')
+    .replace(/[/\\:]/g, '_')
+    .replace(/^\.+/, '')
+    .trim()
+    .slice(0, 120);
+  return (base || fallback) + '.md';
+}
+
+function isAllowedPendingUrl(url) {
+  try {
+    const u = new URL(String(url));
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+    if (!/\.(pdf|docx|pptx?|xlsx?|csv|tsv|txt|md|markdown|html?|epub)(\?|#|$)/i.test(u.pathname + u.search)) {
+      if (!/\.pdf/i.test(String(url))) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function pending() {
   try {
     const r = await chrome.storage.local.get(['pendingPdfUrl', 'pendingPdfName']);
     if (r.pendingPdfUrl) {
-      const resp = await fetch(r.pendingPdfUrl);
-      const blob = await resp.blob();
-      file = new File([blob], r.pendingPdfName || 'document.pdf', { type: 'application/pdf' });
+      if (!isAllowedPendingUrl(r.pendingPdfUrl)) throw new Error('Blocked untrusted pending URL.');
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 30000);
+      try {
+        const resp = await fetch(r.pendingPdfUrl, { signal: ctrl.signal });
+        if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
+        const blob = await resp.blob();
+        if (blob.size > 200 * 1024 * 1024) throw new Error('Pending file exceeds 200 MB.');
+        file = new File([blob], r.pendingPdfName || 'document.pdf', { type: 'application/pdf' });
+      } finally {
+        clearTimeout(timer);
+      }
       $('spOut').textContent = `Loaded: ${file.name} (${(file.size / 1048576).toFixed(1)} MB). Click Convert.`;
       await chrome.storage.local.remove(['pendingPdfUrl', 'pendingPdfName']);
     } else $('spOut').textContent = 'No pending PDF found.';
@@ -46,7 +78,7 @@ $('spDownload')?.addEventListener('click', () => {
   if (!markdown || !file) return;
   const blob = new Blob([markdown], { type: 'text/markdown' });
   const reader = new FileReader();
-  reader.onloadend = () => chrome.downloads.download({ url: reader.result, filename: file.name.replace(/\.(pdf|docx|pptx?|png|jpe?g|webp|gif|bmp|tiff?|xlsx?|csv|tsv|txt|md|markdown|html?|epub)$/i, '') + '.md', saveAs: true });
+  reader.onloadend = () => chrome.downloads.download({ url: reader.result, filename: sanitizeDownloadFilename(file.name), saveAs: true });
   reader.readAsDataURL(blob);
 });
 pending();

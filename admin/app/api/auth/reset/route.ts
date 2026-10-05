@@ -1,7 +1,7 @@
 import { getStore, toPublic } from '@/lib/store';
 import { json, sessionCookieHeader, requestMeta } from '@/lib/session';
 import { validateEmail, validatePassword, validatePin, normalizeEmail } from '@/lib/validation';
-import { pinAllowed, pinFailed, pinCleared } from '@/lib/ratelimit';
+import { pinAllowedAsync, pinFailed, pinCleared } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,13 +20,21 @@ export async function POST(req: Request) {
   const err = validateEmail(email) || validatePin(pin) || validatePassword(newPassword);
   if (err) return json({ error: err }, 400);
 
-  const gate = pinAllowed(`reset:${email}`);
+  const gate = await pinAllowedAsync(`reset:${email}`);
   if (!gate.ok) {
     return json({ error: `Too many attempts. Try again in ${Math.ceil(gate.retryAfterSec / 60)} minutes.` }, 429);
   }
 
   const store = getStore();
   const user = await store.findUserByEmail(email);
+  if (user && user.pin_locked_until && Date.parse(user.pin_locked_until) > Date.now()) {
+    const retrySec = Math.max(1, Math.ceil((Date.parse(user.pin_locked_until) - Date.now()) / 1000));
+    return json(
+      { error: `Account recovery temporarily locked after too many failed attempts. Try again in ${Math.ceil(retrySec / 60)} minutes.` },
+      423,
+      { 'Retry-After': String(retrySec) }
+    );
+  }
   // Uniform message: never reveal whether the email exists.
   if (!user || !store.verifyPin(user, pin)) {
     pinFailed(`reset:${email}`);

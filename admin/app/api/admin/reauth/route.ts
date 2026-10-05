@@ -1,7 +1,7 @@
 import { getStore } from '@/lib/store';
 import { json, sessionUser, requestMeta } from '@/lib/session';
 import { verifySecret, signActionToken, ACTION_TOKEN_TTL_MS } from '@/lib/crypto';
-import { pinAllowed, pinFailed, pinCleared } from '@/lib/ratelimit';
+import { reauthAllowedAsync, reauthFailed, reauthCleared } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,9 +17,9 @@ export async function POST(req: Request) {
 
   const meta = requestMeta(req);
   const bucketKey = `reauth:${me.id}:${meta.ip || 'unknown'}`;
-  const gate = pinAllowed(bucketKey);
+  const gate = await reauthAllowedAsync(bucketKey);
   if (!gate.ok) {
-    return json({ error: `Too many attempts. Try again in ${Math.ceil(gate.retryAfterSec / 60)} min.` }, 429);
+    return json({ error: `Too many attempts. Try again in ${Math.ceil(gate.retryAfterSec / 60)} min.` }, 429, { 'Retry-After': String(gate.retryAfterSec) });
   }
 
   let body: Record<string, unknown>;
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   const pinOk = !!admin && store.verifyPin(admin, pin);
 
   if (!admin || !passwordOk || !pinOk) {
-    pinFailed(bucketKey);
+    reauthFailed(bucketKey);
     try {
       await store.appendAuditLog({
         admin_id: me.id, action: 'reauth_failed', target_user_id: null,
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     return json({ error: 'Verification failed. Check your password and 4-digit key.' }, 401);
   }
 
-  pinCleared(bucketKey);
+  reauthCleared(bucketKey);
   const actionToken = signActionToken(me.id, 'grant_pro');
   try {
     await store.appendAuditLog({

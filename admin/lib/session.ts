@@ -41,16 +41,21 @@ export function clearSessionCookieHeader(): string {
   return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
 }
 
-/** Best-effort client IP for audit / single-session device labels. */
+/** Best-effort client IP for audit / rate-limiting (hardened against leftmost spoofing). */
 export function clientIp(req: Request): string | null {
   const h = (n: string) => req.headers.get(n);
+  // Standard trusted reverse-proxy headers (Vercel, Cloudflare, AWS)
+  const trusted = h('x-vercel-ip') || h('cf-connecting-ip') || h('x-real-ip');
+  if (trusted) return trusted.trim().slice(0, 64);
+
   const forwarded = h('x-forwarded-for');
   if (forwarded) {
-    const first = forwarded.split(',')[0].trim();
-    if (first) return first.slice(0, 64);
+    // Reverse proxies append the real IP to the end. Taking the rightmost non-empty IP prevents client header spoofing.
+    const parts = forwarded.split(',').map((s) => s.trim()).filter(Boolean);
+    if (parts.length > 0) {
+      return parts[parts.length - 1].slice(0, 64);
+    }
   }
-  const real = h('x-real-ip');
-  if (real) return real.trim().slice(0, 64);
   return null;
 }
 

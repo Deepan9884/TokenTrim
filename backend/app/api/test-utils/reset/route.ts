@@ -4,6 +4,7 @@ import { json } from '@/lib/session';
 export const dynamic = 'force-dynamic';
 
 function allowed(): boolean {
+  if (process.env.NODE_ENV === 'production') return false;
   return process.env.ALLOW_TEST_ENDPOINTS === 'true' && isDemoStore();
 }
 

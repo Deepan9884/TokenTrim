@@ -2,14 +2,14 @@ import { getStore, toPublic } from '@/lib/store';
 import { json, sessionCookieHeader, requestMeta, clientIp } from '@/lib/session';
 import { validateEmail, normalizeEmail } from '@/lib/validation';
 import { verifySecret } from '@/lib/crypto';
-import { signinAllowed, signinFailed, signinCleared } from '@/lib/ratelimit';
+import { signinAllowedAsync, signinFailed, signinCleared } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  // ── Rate limiting (by IP) ──────────────────────────────────────────
+  // ── Rate limiting (by IP, cross-instance when Supabase is set) ──────
   const ip = clientIp(req) || 'unknown';
-  const gate = signinAllowed(ip);
+  const gate = await signinAllowedAsync(ip);
   if (!gate.ok) {
     return json(
       { error: `Too many login attempts. Try again in ${Math.ceil(gate.retryAfterSec / 60)} minutes.` },
@@ -52,10 +52,6 @@ export async function POST(req: Request) {
     } catch { /* analytics must never break auth */ }
     return json({ error: 'Incorrect email or password.' }, 401);
   }
-  if (user.pin_locked_until && Date.parse(user.pin_locked_until) > Date.now()) {
-    return json({ error: 'Account temporarily locked after too many failed attempts. Try again later.' }, 423);
-  }
-
   // Successful login — clear rate limit for this IP
   signinCleared(ip);
 

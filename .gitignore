@@ -51,8 +51,17 @@ desktop.ini
 *.swo
 *~
 
-# Zip archives
+# Zip archives (build outputs; never commit store zips)
 *.zip
+
+# Secrets & credentials (explicit; .env* above already covers .env.local)
+*.pem
+*.key
+*.p12
+*.p8
+id_rsa*
+credentials.json
+secrets*.json
 
 # Design files (keep in repo but ignore variations)
 design/

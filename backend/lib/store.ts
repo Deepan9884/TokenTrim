@@ -9,6 +9,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import './env';
 import { hashSecret, verifySecret, newSessionToken, newSalt, sha256 } from './crypto';
 
 export interface PublicUser {
@@ -703,6 +704,10 @@ class DemoStore implements Store {
   }
 
   async resetForTests(): Promise<void> {
+    const inUnitTest = !!process.env.VITEST_WORKER_ID || process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
+    if (!inUnitTest && (process.env.NODE_ENV === 'production' || process.env.ALLOW_TEST_ENDPOINTS !== 'true')) {
+      throw new Error('resetForTests is disabled (production or ALLOW_TEST_ENDPOINTS!=true).');
+    }
     saveDb({ users: [], sessions: [], events: [], documents: [], audit: [] });
   }
 }
@@ -1242,6 +1247,10 @@ class SupabaseStore implements Store {
   }
 
   async resetForTests(): Promise<void> {
+    const inUnitTest = !!process.env.VITEST_WORKER_ID || process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
+    if (!inUnitTest && (process.env.NODE_ENV === 'production' || process.env.ALLOW_TEST_ENDPOINTS !== 'true')) {
+      throw new Error('resetForTests is disabled (production or ALLOW_TEST_ENDPOINTS!=true).');
+    }
     const sb = await supabaseAdmin();
     await sb.from('user_documents').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await sb.from('analytics_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
@@ -1256,7 +1265,20 @@ export function isDemoStore(): boolean {
   return !(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
+export function assertStoreReady(): void {
+  // Skip during `next build` page-data collection (runtime env not present).
+  if (!!process.env.NEXT_PHASE && process.env.NEXT_PHASE.includes('phase-production-build')) return;
+  // Half-configured Supabase must never silently use demo JSON.
+  if (!!process.env.SUPABASE_URL !== !!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Invalid store config: set both SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, or neither.');
+  }
+  if (process.env.NODE_ENV === 'production' && isDemoStore()) {
+    throw new Error('Invalid store config: production requires SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY.');
+  }
+}
+
 export function getStore(): Store {
+  assertStoreReady();
   if (cached) return cached;
   cached = isDemoStore() ? new DemoStore() : new SupabaseStore();
   return cached;

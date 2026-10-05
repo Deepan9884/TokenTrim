@@ -18,6 +18,9 @@ function addDirectoryToZip(zip, dirPath, rootPath) {
     if (stat.isDirectory()) {
       addDirectoryToZip(zip, fullPath, rootPath);
     } else {
+      // Never ship source maps, hidden VCS, or local env in the store zip.
+      if (file.endsWith('.map')) return;
+      if (file === '.git' || file === '.github') return;
       // CRITICAL: Ensure forward slashes '/' in ZIP paths for Chrome / Brave / Web Store compatibility
       const relativePath = path.relative(rootPath, fullPath).replace(/\\/g, '/');
       const fileData = fs.readFileSync(fullPath);

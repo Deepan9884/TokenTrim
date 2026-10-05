@@ -1,7 +1,7 @@
 import { getStore } from '@/lib/store';
 import { json, sessionUser, requestMeta } from '@/lib/session';
 import { validatePlanExpiresAt } from '@/lib/validation';
-import { verifyActionToken, consumeActionToken, type ActionTokenPayload } from '@/lib/crypto';
+import { verifyActionTokenAsync, consumeActionTokenAsync, type ActionTokenPayload } from '@/lib/crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +41,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     // The token is consumed only after the grant succeeds, so a validation
     // error (e.g. bad date) does not burn the admin's re-auth.
     const token = (req.headers.get('x-admin-action') || '').trim();
-    actionPayload = token ? verifyActionToken(token, me.id, 'grant_pro') : null;
+    actionPayload = token ? await verifyActionTokenAsync(token, me.id, 'grant_pro') : null;
     if (!actionPayload) {
       return json({ error: 'Re-enter your password and 4-digit key to grant Pro.' }, 403);
     }
@@ -67,7 +67,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     const code = (e as NodeJS.ErrnoException)?.code;
     return json({ error: msg }, code === 'EXPIRY_UNSUPPORTED' ? 409 : 500);
   }
-  if (actionPayload) consumeActionToken(actionPayload);
+  if (actionPayload) await consumeActionTokenAsync(actionPayload);
 
   const meta = requestMeta(req);
   try {

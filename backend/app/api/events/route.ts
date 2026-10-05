@@ -1,6 +1,6 @@
 import { getStore } from '@/lib/store';
 import { json, sessionUser, clientIp } from '@/lib/session';
-import { eventsAllowed, eventsRecorded } from '@/lib/ratelimit';
+import { eventsAllowedAsync, eventsRecorded } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,9 +29,9 @@ function cleanProps(v: unknown): Record<string, unknown> {
 
 /** Extension (Bearer token) and web (cookie) both land here. Auth REQUIRED. */
 export async function POST(req: Request) {
-  // ── Rate limiting (by IP) ──────────────────────────────────────────
+  // ── Rate limiting (by IP, cross-instance when Supabase is set) ──────
   const ip = clientIp(req) || 'unknown';
-  const gate = eventsAllowed(ip);
+  const gate = await eventsAllowedAsync(ip);
   if (!gate.ok) {
     return json({ error: 'Too many requests.' }, 429, { 'Retry-After': String(gate.retryAfterSec) });
   }

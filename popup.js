@@ -20,6 +20,76 @@ if (typeof window !== 'undefined') {
   window.AdminAPI = AdminAPI;
 }
 
+// ---------- security helpers (no innerHTML for dynamic strings) ----------
+function setButtonBusy(btn, busyText) {
+  if (!btn) return '';
+  const orig = btn.textContent || '';
+  btn.disabled = true;
+  btn.textContent = busyText;
+  return orig;
+}
+
+function restoreButton(btn, origText) {
+  if (!btn) return;
+  btn.disabled = false;
+  btn.textContent = origText;
+}
+
+function setIconUse(svgEl, iconId) {
+  if (!svgEl) return;
+  // <svg> contains a single <use>; update href without innerHTML.
+  let use = svgEl.querySelector('use');
+  if (!use) {
+    use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    svgEl.appendChild(use);
+  }
+  use.setAttribute('href', `#${iconId}`);
+}
+
+function sanitizeDownloadFilename(name, fallback = 'document') {
+  const base = String(name || fallback)
+    .replace(/\.(pdf|docx|pptx?|png|jpe?g|webp|gif|bmp|tiff?|xlsx?|csv|tsv|txt|md|markdown|html?|epub)$/i, '')
+    .replace(/[/\\:]/g, '_')
+    .replace(/^\.+/, '')
+    .trim()
+    .slice(0, 120);
+  return (base || fallback) + '.md';
+}
+
+function isAllowedPendingUrl(url) {
+  try {
+    const u = new URL(String(url));
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+    // Only document-like URLs from context-menu handoff; blocks javascript:,
+    // data:, file:, and non-document pages by design.
+    if (!/\.(pdf|docx|pptx?|xlsx?|csv|tsv|txt|md|markdown|html?|epub)(\?|#|$)/i.test(u.pathname + u.search)) {
+      // Allow extension-less PDF viewer pages that still carry pdf markers.
+      if (!/\.pdf/i.test(String(url))) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function fetchPendingFile(url, fallbackName) {
+  if (!isAllowedPendingUrl(url)) {
+    throw new Error('Blocked untrusted pending URL.');
+  }
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 30000);
+  try {
+    const response = await fetch(url, { signal: ctrl.signal });
+    if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+    const blob = await response.blob();
+    // 200 MB cap matches converter maxBytes; refuse oversized blobs early.
+    if (blob.size > 200 * 1024 * 1024) throw new Error('Pending file exceeds 200 MB.');
+    return new File([blob], fallbackName || 'document.pdf', { type: blob.type || 'application/pdf' });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 const AppState = { ONBOARDING: 'onboarding', EMPTY: 'empty', LOADED: 'loaded', CONVERTING: 'converting', SUCCESS: 'success', HISTORY: 'history', ERROR: 'error' };
 
 let currentState = AppState.EMPTY;
@@ -1004,11 +1074,7 @@ function setupAuthHandlers() {
       return;
     }
     const btn = elements.onboardingBtnSignIn;
-    const origHtml = btn ? btn.innerHTML : '';
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<span>Signing in...</span>';
-    }
+    const origText = setButtonBusy(btn, 'Signing in...');
     try {
       adminUser = await AdminAPI.signin({ email, password });
       if (elements.onboardingPassword) elements.onboardingPassword.value = '';
@@ -1019,10 +1085,7 @@ function setupAuthHandlers() {
     } catch (e) {
       showOnboardAuthError(friendlyAdminError(e));
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = origHtml;
-      }
+      restoreButton(btn, origText);
     }
   });
 
@@ -1049,11 +1112,7 @@ function setupAuthHandlers() {
       return;
     }
     const btn = elements.onboardingBtnSignUp;
-    const origHtml = btn ? btn.innerHTML : '';
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<span>Creating account...</span>';
-    }
+    const origText = setButtonBusy(btn, 'Creating account...');
     try {
       adminUser = await AdminAPI.signup({ email, password, pin, name: '' });
       if (elements.onboardingSuPassword) elements.onboardingSuPassword.value = '';
@@ -1065,10 +1124,7 @@ function setupAuthHandlers() {
     } catch (e) {
       showOnboardAuthError(friendlyAdminError(e));
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = origHtml;
-      }
+      restoreButton(btn, origText);
     }
   });
 
@@ -1137,11 +1193,7 @@ function setupAuthHandlers() {
     }
 
     const btn = elements.onboardBtnResetPassword;
-    const origHtml = btn ? btn.innerHTML : '';
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<span>Resetting...</span>';
-    }
+    const origText = setButtonBusy(btn, 'Resetting...');
     try {
       adminUser = await AdminAPI.reset({ email, pin, newPassword });
       if (elements.onboardFpNewPassword) elements.onboardFpNewPassword.value = '';
@@ -1153,10 +1205,7 @@ function setupAuthHandlers() {
     } catch (e) {
       showOnboardAuthError(friendlyAdminError(e));
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = origHtml;
-      }
+      restoreButton(btn, origText);
     }
   });
 
@@ -1345,7 +1394,7 @@ function updateSuccessDisplay() {
     elements.qualityReport.classList.toggle('hidden', !show);
     if (show) {
       elements.qualitySummary.textContent = `Removed ${report.removedLines || 0} boilerplate line(s) • ${report.tablesOptimized || 0} table(s) optimized${report.truncated ? ' • truncated to budget' : ''} • ${report.querySections?.length ? report.querySections.length + ' section(s) kept' : 'full document'}`;
-      elements.warningsList.innerHTML = '';
+      elements.warningsList.replaceChildren();
       (report.warnings || []).forEach(w => {
         const li = document.createElement('li');
         li.textContent = w;
@@ -1401,8 +1450,7 @@ async function handleCopy() {
 
 function handleDownload() {
   if (!convertedMarkdown || !currentFile) return;
-  const baseName = currentFile.name.replace(/\.(pdf|docx|pptx?|png|jpe?g|webp|gif|bmp|tiff?|xlsx?|csv|tsv|txt|md|markdown|html?|epub)$/i, '');
-  const filename = baseName + '.md';
+  const filename = sanitizeDownloadFilename(currentFile.name);
   if (typeof chrome !== 'undefined' && chrome.downloads) {
     const blob = new Blob([convertedMarkdown], { type: 'text/markdown;charset=utf-8' });
     const reader = new FileReader();
@@ -1481,7 +1529,7 @@ async function handlePromptPack() {
       elements.promptPackBtn.textContent = 'Copied!';
     }
     if (elements.promptPackIcon) {
-      elements.promptPackIcon.innerHTML = '<use href="#tt-i-done"/>';
+      setIconUse(elements.promptPackIcon, 'tt-i-done');
     }
     setTimeout(() => {
       if (elements.promptPackBtn) elements.promptPackBtn.classList.remove('copied');
@@ -1491,7 +1539,7 @@ async function handlePromptPack() {
         elements.promptPackBtn.textContent = 'Copy prompt';
       }
       if (elements.promptPackIcon) {
-        elements.promptPackIcon.innerHTML = '<use href="#tt-i-content_copy"/>';
+        setIconUse(elements.promptPackIcon, 'tt-i-content_copy');
       }
     }, 2000);
   } else {
@@ -1518,9 +1566,9 @@ async function handleBatchSelect(e) {
 }
 function renderBatch() {
   if (!elements.batchList) return;
-  if (!batchQueue.length) { elements.batchList.classList.add('hidden'); elements.batchList.innerHTML = ''; return; }
+  if (!batchQueue.length) { elements.batchList.classList.add('hidden'); elements.batchList.replaceChildren(); return; }
   elements.batchList.classList.remove('hidden');
-  elements.batchList.innerHTML = '';
+  elements.batchList.replaceChildren();
   batchQueue.forEach((item, i) => {
     const row = document.createElement('div');
     row.className = 'body-sm';
@@ -1541,7 +1589,7 @@ async function renderHistory() {
   if (!elements.historyList) return;
   let docs = [];
   try { docs = await ChunkStore.listDocuments(20); } catch { docs = []; }
-  elements.historyList.innerHTML = '';
+  elements.historyList.replaceChildren();
   if (!docs.length) { elements.historyList.textContent = 'No history yet.'; return; }
   docs.forEach(d => {
     const row = document.createElement('div');
@@ -1568,13 +1616,33 @@ function showErrorBanner(errorData, targetContainer = null) {
   const banner = document.createElement('div');
   banner.id = 'error-banner'; banner.className = 'error-banner';
   const iconName = ['error', 'warning', 'feedback'].includes(errorData.icon) ? errorData.icon : 'error';
-  banner.innerHTML = `<div class="error-banner-content"><svg class="material-symbols-outlined error-icon" aria-hidden="true"><use href="#tt-i-${iconName}"/></svg><div class="error-text"><span class="headline-sm error-title"></span><span class="body-sm error-message"></span></div></div>`;
-  banner.querySelector('.error-title').textContent = errorData.title || 'Conversion Issue';
-  banner.querySelector('.error-message').textContent = errorData.message || '';
+  // Build banner with DOM APIs only (no innerHTML) so titles/messages can
+  // never inject markup.
+  const content = document.createElement('div');
+  content.className = 'error-banner-content';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'material-symbols-outlined error-icon');
+  svg.setAttribute('aria-hidden', 'true');
+  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  use.setAttribute('href', `#tt-i-${iconName}`);
+  svg.appendChild(use);
+  const text = document.createElement('div');
+  text.className = 'error-text';
+  const title = document.createElement('span');
+  title.className = 'headline-sm error-title';
+  title.textContent = errorData.title || 'Conversion Issue';
+  const msg = document.createElement('span');
+  msg.className = 'body-sm error-message';
+  msg.textContent = errorData.message || '';
+  text.appendChild(title);
+  text.appendChild(msg);
+  content.appendChild(svg);
+  content.appendChild(text);
+  banner.appendChild(content);
   if (errorData.details) {
     const d = document.createElement('div');
     d.className = 'body-sm error-details'; d.textContent = errorData.details;
-    banner.querySelector('.error-text').appendChild(d);
+    text.appendChild(d);
   }
   const container = targetContainer || elements.viewLoaded || elements.viewEmpty;
   container?.insertBefore(banner, container.firstChild);
@@ -1594,9 +1662,7 @@ async function checkForPendingFile() {
   try {
     const result = await chrome.storage.local.get(['pendingPdfUrl', 'pendingPdfName']);
     if (result.pendingPdfUrl) {
-      const response = await fetch(result.pendingPdfUrl);
-      const blob = await response.blob();
-      const file = new File([blob], result.pendingPdfName || 'document.pdf', { type: 'application/pdf' });
+      const file = await fetchPendingFile(result.pendingPdfUrl, result.pendingPdfName || 'document.pdf');
       loadFile(file);
       await chrome.storage.local.remove(['pendingPdfUrl', 'pendingPdfName']);
     }

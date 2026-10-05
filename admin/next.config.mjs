@@ -3,22 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   async headers() {
     return [
-      // ── API routes: restricted CORS for extension + admin panel ─────
-      {
-        source: '/api/:path*',
-        headers: [
-          // Only allow chrome-extension:// origins and the admin panel itself.
-          // In production set ADMIN_ORIGIN env var; locally falls back to localhost.
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: process.env.ADMIN_ORIGIN || 'http://localhost:3100'
-          },
-          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization, X-CSRF-Token' },
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Vary', value: 'Origin' }
-        ]
-      },
+      // NOTE: CORS for /api/* is handled dynamically in middleware.ts
+      // (explicit ADMIN_ORIGIN allowlist, no wildcards). Do not set a static
+      // Access-Control-Allow-Origin here — it cannot vary by request Origin.
       // ── All routes: security headers ───────────────────────────────
       {
         source: '/:path*',

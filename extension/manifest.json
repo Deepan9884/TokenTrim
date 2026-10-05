@@ -82,7 +82,7 @@
         "lib/tesseract-core/*",
         "lib/tessdata/*"
       ],
-      "matches": ["http://*/*", "https://*/*"]
+      "matches": ["http://localhost/*"]
     }
   ],
   "content_security_policy": {

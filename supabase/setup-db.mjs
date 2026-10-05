@@ -137,7 +137,8 @@ try {
         if (insertErr) {
           console.log(`⚠️  Could not auto-seed admin: ${insertErr.message}`);
         } else {
-          console.log(`👤 Admin user created: ${adminEmail} (password: ${adminPassword}, pin: ${adminPin})`);
+          // Never log passwords/PINs — secrets stay out of CI/console history.
+          console.log(`👤 Admin user created: ${adminEmail} (credentials from env, not shown)`);
         }
       } else {
         // Update credentials and ensure admin role
@@ -151,7 +152,7 @@ try {
         if (updateErr) {
           console.log(`⚠️  Could not update admin credentials: ${updateErr.message}`);
         } else {
-          console.log(`👤 Admin user updated: ${adminEmail} (password: ${adminPassword}, pin: ${adminPin})`);
+          console.log(`👤 Admin user updated: ${adminEmail} (credentials from env, not shown)`);
         }
       }
     }

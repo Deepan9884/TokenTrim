@@ -42,6 +42,8 @@ describe('License Pro expiration', () => {
 
   it('rejects malformed keys as before', async () => {
     await expect(License.activate('WRONG-KEY')).rejects.toThrow('INVALID_LICENSE');
+    await expect(License.activate('TT-PRO-1234567890')).rejects.toThrow('INVALID_LICENSE');
+    await expect(License.activate('TT-PRO-0000-0000-0000')).rejects.toThrow('INVALID_LICENSE');
   });
 
   it('deactivate clears expiry state', async () => {

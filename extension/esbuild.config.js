@@ -14,6 +14,7 @@ const isWatch = process.argv.includes('--watch');
 const isDev = process.argv.includes('--dev') || isWatch;
 
 const outdir = join(__dirname, 'dist');
+const noMap = process.argv.includes('--no-map') || process.env.TT_NO_MAP === '1';
 
 async function buildExtension() {
   rmSync(outdir, { recursive: true, force: true });
@@ -26,7 +27,7 @@ async function buildExtension() {
     format: 'esm',
     target: 'chrome110',
     outdir: join(outdir),
-    sourcemap: true,
+    sourcemap: noMap ? false : true,
     minify: !isDev,
     minifyIdentifiers: false,
     keepNames: true,

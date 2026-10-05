@@ -42,12 +42,39 @@ export function sha256(input: string): string {
 
 export const ACTION_TOKEN_TTL_MS = 5 * 60 * 1000;
 
-const consumedActionTokens = new Set<string>();
+// Consumed JTIs with expiry so replay protection survives longer than the
+// previous "clear entire set at 10k" logic (which reset protection).
+// In-memory is best-effort for single-instance dev; Supabase persistence
+// (admin_action_tokens table, if present) is attempted for multi-instance.
+const consumedActionTokens = new Map<string, number>();
+
+function pruneConsumed(): void {
+  const now = Date.now();
+  for (const [jti, exp] of consumedActionTokens) {
+    if (exp <= now) consumedActionTokens.delete(jti);
+  }
+  // Bound memory without dropping live entries: evict expired first,
+  // then oldest if still absurdly large.
+  if (consumedActionTokens.size > 10000) {
+    const entries = [...consumedActionTokens.entries()].sort((a, b) => a[1] - b[1]);
+    for (const [jti] of entries.slice(0, consumedActionTokens.size - 10000)) {
+      consumedActionTokens.delete(jti);
+    }
+  }
+}
 
 function actionSecret(): Buffer {
   const s = process.env.ADMIN_ACTION_SECRET;
-  if (s) return Buffer.from(s, 'utf8');
-  // Per-boot random secret: tokens die with the process (safe default).
+  if (s) {
+    if (process.env.NODE_ENV === 'production' && s.length < 32) {
+      throw new Error('Invalid secrets config: ADMIN_ACTION_SECRET must be >= 32 chars in production.');
+    }
+    return Buffer.from(s, 'utf8');
+  }
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Invalid secrets config: ADMIN_ACTION_SECRET is required in production.');
+  }
+  // Per-boot random secret: tokens die with the process (safe default for dev).
   if (!(globalThis as Record<string, unknown>).__ttActionSecret) {
     (globalThis as Record<string, unknown>).__ttActionSecret = randomBytes(32);
   }
@@ -100,6 +127,7 @@ export function verifyActionToken(token: string, adminId: string, purpose: strin
     const payload = JSON.parse(b64urlDecode(body).toString('utf8')) as ActionTokenPayload;
     if (payload.sub !== adminId || payload.purpose !== purpose) return null;
     if (typeof payload.exp !== 'number' || payload.exp <= Date.now()) return null;
+    pruneConsumed();
     if (consumedActionTokens.has(payload.jti)) return null;
     return payload;
   } catch {
@@ -107,10 +135,64 @@ export function verifyActionToken(token: string, adminId: string, purpose: strin
   }
 }
 
+/** Async cross-instance verification consulting admin_action_tokens table when Supabase is configured. */
+export async function verifyActionTokenAsync(
+  token: string,
+  adminId: string,
+  purpose: string
+): Promise<ActionTokenPayload | null> {
+  const local = verifyActionToken(token, adminId, purpose);
+  if (!local) return null;
+
+  if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+        auth: { persistSession: false }
+      });
+      const { data } = await sb
+        .from('admin_action_tokens')
+        .select('jti')
+        .eq('jti', local.jti)
+        .maybeSingle();
+      if (data) {
+        // Replay detected across instances
+        consumedActionTokens.set(local.jti, local.exp);
+        return null;
+      }
+    } catch {
+      // Table may not exist yet in pre-migration database; in-memory check holds
+    }
+  }
+
+  return local;
+}
+
 export function consumeActionToken(payload: ActionTokenPayload): void {
   try {
-    consumedActionTokens.add(payload.jti);
-    // Bound memory: drop the set if it ever grows absurd (TTL is 5 min).
-    if (consumedActionTokens.size > 10000) consumedActionTokens.clear();
+    pruneConsumed();
+    consumedActionTokens.set(payload.jti, payload.exp);
+    // Best-effort cross-instance persistence: if Supabase is configured and
+    // an admin_action_tokens table exists, record the JTI.
+    void persistConsumedJti(payload).catch(() => undefined);
   } catch { /* ignore */ }
+}
+
+export async function consumeActionTokenAsync(payload: ActionTokenPayload): Promise<void> {
+  consumeActionToken(payload);
+  await persistConsumedJti(payload).catch(() => undefined);
+}
+
+async function persistConsumedJti(payload: ActionTokenPayload): Promise<void> {
+  if (!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)) return;
+  const { createClient } = await import('@supabase/supabase-js');
+  const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false }
+  });
+  await sb.from('admin_action_tokens').insert({
+    jti: payload.jti,
+    admin_id: payload.sub,
+    purpose: payload.purpose,
+    expires_at: new Date(payload.exp).toISOString()
+  });
 }

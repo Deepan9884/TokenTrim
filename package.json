@@ -7,7 +7,7 @@
     "build": "node esbuild.config.js",
     "build:extension": "node esbuild.config.js",
     "package": "node tools/package-zip.js",
-    "build:zip": "node esbuild.config.js && node tools/package-zip.js",
+    "build:zip": "node esbuild.config.js --no-map && node tools/package-zip.js",
     "backend:dev": "npm --prefix backend run dev",
     "backend:build": "npm --prefix backend run build",
     "backend:start": "npm --prefix backend run start",

@@ -189,11 +189,12 @@ The UI design was created in Stitch and implements Google's Material Design 3 sp
 
 ## 🔒 Privacy & Security
 
-- **No remote servers** - Everything runs client-side in your browser
-- **No data collection** - We don't track, store, or transmit any data
-- **No analytics** - Zero telemetry or usage monitoring
-- **Open source** - Inspect the code yourself
-- **Local processing** - PDFs never leave your device
+- **Local by default** - Conversion runs client-side in your browser.
+- **Optional sync only** - Cloud documents (`/api/documents`) and event upload
+  (`/api/events`) happen only after you sign in and configure a base URL.
+- **No silent tracking** - Local telemetry counters are opt-in; see `PRIVACY.md`.
+- **Open source** - Inspect the code yourself.
+- Full details (endpoints, retention, residual risks): `PRIVACY.md`.
 
 ## 🐛 Troubleshooting
 

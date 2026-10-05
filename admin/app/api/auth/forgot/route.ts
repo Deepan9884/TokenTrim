@@ -1,7 +1,7 @@
 import { getStore } from '@/lib/store';
 import { json } from '@/lib/session';
 import { validateEmail, normalizeEmail } from '@/lib/validation';
-import { pinAllowed } from '@/lib/ratelimit';
+import { pinAllowedAsync } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const email = normalizeEmail(body.email);
   if (validateEmail(email)) return json({ error: 'Enter a valid email address.' }, 400);
 
-  const gate = pinAllowed(`forgot:${email}`);
+  const gate = await pinAllowedAsync(`forgot:${email}`);
   if (!gate.ok) {
     return json({ error: `Too many attempts. Try again in ${Math.ceil(gate.retryAfterSec / 60)} minutes.` }, 429);
   }

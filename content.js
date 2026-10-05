@@ -77,6 +77,8 @@
 
   // ==================== MESSAGE LISTENER ====================
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Extension-only channel; ignore anything not from our own extension.
+    if (sender && sender.id && sender.id !== chrome.runtime.id) return false;
     console.log('Content script received message:', message);
 
     if (message.action === 'getPdfLinks') {
@@ -214,11 +216,14 @@
     }
   });
 
-  // Start observing the document for changes
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+  // Start observing the document for changes (guard: document.body may be
+  // null when run_at=document_idle fires on empty/PDF-viewer pages).
+  if (document.body) {
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
 
   // ==================== CLEANUP ====================
   window.addEventListener('beforeunload', () => {

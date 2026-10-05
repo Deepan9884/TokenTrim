@@ -81,6 +81,9 @@ if (chrome.notifications?.onClicked) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Extension-only channel (web pages cannot spoof chrome.runtime without
+  // externally_connectable), but still verify the sender when present.
+  if (sender && sender.id && sender.id !== chrome.runtime.id) return false;
   if (message.action === 'getPdfUrl') {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]) {

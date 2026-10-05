@@ -10,6 +10,11 @@ const SOURCE_TYPES = ['pdf', 'pdf', 'pdf', 'docx', 'docx', 'pptx', 'image', 'xls
 
 /** Deterministic demo dataset: admin + users + 14 days of events (tests only). */
 export async function POST() {
+  // Fail closed: never serve in production, never against a real database.
+  // Requires explicit ALLOW_TEST_ENDPOINTS=true AND demo (JSON) store.
+  if (process.env.NODE_ENV === 'production') {
+    return json({ error: 'Not found.' }, 404);
+  }
   if (!(process.env.ALLOW_TEST_ENDPOINTS === 'true' && isDemoStore())) {
     return json({ error: 'Not found.' }, 404);
   }

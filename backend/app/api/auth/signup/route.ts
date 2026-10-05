@@ -1,14 +1,14 @@
 import { getStore, toPublic } from '@/lib/store';
 import { json, sessionCookieHeader, requestMeta, clientIp } from '@/lib/session';
 import { validateEmail, validatePassword, validatePin, validateName, normalizeEmail } from '@/lib/validation';
-import { signupAllowed, signupRecorded } from '@/lib/ratelimit';
+import { signupAllowedAsync, signupRecorded } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  // ── Rate limiting (by IP) ──────────────────────────────────────────
+  // ── Rate limiting (by IP, cross-instance when Supabase is set) ──────
   const ip = clientIp(req) || 'unknown';
-  const gate = signupAllowed(ip);
+  const gate = await signupAllowedAsync(ip);
   if (!gate.ok) {
     return json(
       { error: `Too many signups. Try again in ${Math.ceil(gate.retryAfterSec / 60)} minutes.` },
