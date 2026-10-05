@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" width="40" height="40">
+  <rect width="40" height="40" rx="9" fill="#fffbeb" stroke="#fef3c7" stroke-width="1"/>
+  <!-- 16:9 slide canvas -->
+  <rect x="9" y="11" width="22" height="18" rx="2.5" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
+  <!-- Slide top header accent band -->
+  <path d="M9.5 14.5C9.5 13.1193 10.6193 12 12 12H28C29.3807 12 30.5 13.1193 30.5 14.5V15H9.5V14.5Z" fill="#ffedd5"/>
+  <!-- Minimal chart bars inside slide -->
+  <rect x="13.5" y="21" width="2.5" height="5" rx="0.75" fill="#fdba74"/>
+  <rect x="18" y="18" width="2.5" height="8" rx="0.75" fill="#fb923c"/>
+  <rect x="22.5" y="16" width="2.5" height="10" rx="0.75" fill="#ea580c"/>
+</svg>

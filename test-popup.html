@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Popup Test - No Modules</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .test { margin: 10px 0; padding: 10px; border-radius: 4px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    #fileInput { margin: 10px 0; }
+    #output { 
+      margin-top: 20px; 
+      padding: 10px; 
+      background: #f5f5f5; 
+      font-family: monospace; 
+      font-size: 11px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>TokenTrim Popup Test</h2>
+  
+  <div id="tests"></div>
+  
+  <hr>
+  
+  <h3>File Upload Test:</h3>
+  <input type="file" id="fileInput" accept=".pdf,.docx" />
+  <button onclick="testFile()">Test Selected File</button>
+  
+  <hr>
+  
+  <button onclick="runTests()">Run All Tests</button>
+  <button onclick="clearLog()">Clear</button>
+  
+  <div id="output"></div>
+
+  <!-- Load libraries BEFORE any module scripts -->
+  <script src="lib/mammoth.browser.min.js"></script>
+  <script src="lib/turndown.min.js"></script>
+  <script src="lib/turndown-plugin-gfm.js"></script>
+
+  <script>
+    const output = document.getElementById('output');
+    const tests = document.getElementById('tests');
+
+    function log(msg) {
+      const time = new Date().toLocaleTimeString();
+      output.textContent += `[${time}] ${msg}\n`;
+      output.scrollTop = output.scrollHeight;
+      console.log(msg);
+    }
+
+    function clearLog() {
+      output.textContent = '';
+      tests.innerHTML = '';
+    }
+
+    function addTest(label, success, details = '') {
+      const div = document.createElement('div');
+      div.className = `test ${success ? 'success' : 'error'}`;
+      div.innerHTML = `<strong>${success ? '✅' : '❌'} ${label}</strong><br>${details}`;
+      tests.appendChild(div);
+    }
+
+    function runTests() {
+      clearLog();
+      log('=== Starting Tests ===');
+      tests.innerHTML = '';
+
+      // Test 1: Extension Context
+      const isExtension = typeof chrome !== 'undefined' && chrome.runtime;
+      addTest('Extension Context', isExtension, isExtension ? 'Running as extension' : 'Running as webpage');
+      log(`Extension context: ${isExtension}`);
+
+      // Test 2: Libraries
+      const mammothOK = typeof mammoth !== 'undefined';
+      const turndownOK = typeof TurndownService !== 'undefined';
+      const gfmOK = typeof turndownPluginGfm !== 'undefined';
+      
+      addTest('Mammoth.js', mammothOK);
+      addTest('Turndown', turndownOK);
+      addTest('Turndown GFM', gfmOK);
+      
+      log(`Mammoth: ${mammothOK}, Turndown: ${turndownOK}, GFM: ${gfmOK}`);
+
+      // Test 3: DOM Elements
+      const fileInput = document.getElementById('fileInput');
+      addTest('File Input Element', !!fileInput, fileInput ? 'Found' : 'Not found');
+      log(`File input exists: ${!!fileInput}`);
+
+      // Test 4: Try importing converter (this will fail in file:// but work in extension)
+      log('Attempting to load converter module...');
+      
+      if (isExtension) {
+        const converterURL = chrome.runtime.getURL('lib/converter.js');
+        log(`Converter URL: ${converterURL}`);
+        
+        import(converterURL)
+          .then(module => {
+            addTest('Converter Module', true, 'Loaded successfully');
+            log('✅ Converter loaded!');
+            
+            if (module.converter) {
+              addTest('Converter Instance', true, 'Found converter object');
+              log('✅ Converter instance found');
+              
+              // Test initialization
+              module.converter.initialize()
+                .then(initialized => {
+                  addTest('Converter Init', initialized, initialized ? 'Initialized' : 'Failed to initialize');
+                  log(`Converter initialized: ${initialized}`);
+                })
+                .catch(err => {
+                  addTest('Converter Init', false, err.message);
+                  log(`❌ Init error: ${err.message}`);
+                });
+            } else {
+              addTest('Converter Instance', false, 'Converter object not found in module');
+              log('❌ No converter in module');
+            }
+          })
+          .catch(err => {
+            addTest('Converter Module', false, err.message);
+            log(`❌ Converter load error: ${err.message}`);
+          });
+      } else {
+        addTest('Converter Module', false, 'Cannot test - not running as extension');
+        log('⚠️ Cannot test converter - open this in extension popup');
+      }
+
+      log('=== Tests Complete ===');
+    }
+
+    function testFile() {
+      const fileInput = document.getElementById('fileInput');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        log('❌ No file selected');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      log(`📄 File: ${file.name}`);
+      log(`   Type: ${file.type}`);
+      log(`   Size: ${(file.size / 1024).toFixed(2)} KB`);
+      
+      const isPDF = file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+      const isDOCX = file.name.toLowerCase().endsWith('.docx') || file.type.includes('wordprocessingml');
+      
+      if (isPDF) {
+        log('✅ Valid PDF detected');
+      } else if (isDOCX) {
+        log('✅ Valid DOCX detected');
+      } else {
+        log('❌ Invalid file type');
+      }
+    }
+
+    // Auto-run on load
+    window.addEventListener('DOMContentLoaded', () => {
+      log('Test page loaded. Click "Run All Tests"');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  try {
+    const worker = new Worker('lib/pdf.worker.js');
+    worker.onerror = (e) => {
+      console.error('WORKER ERROR:', e.message);
+    };
+    worker.onmessage = (e) => {
+      console.log('WORKER MESSAGE:', e.data);
+    };
+    console.log('Worker created');
+  } catch(e) {
+    console.error('FAILED TO CREATE WORKER:', e.message);
+  }
+</script>
+</body>
+</html>

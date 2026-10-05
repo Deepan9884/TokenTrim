@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenTrim Extension Test</title>
+  <style>
+    body {
+      font-family: system-ui;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .test-section {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+    .test-section h3 {
+      margin-top: 0;
+    }
+    .status {
+      padding: 8px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .warning { background: #fff3cd; color: #856404; }
+    button {
+      padding: 10px 20px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    #results {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔬 TokenTrim Extension Test</h1>
+  <p>This page helps you test the TokenTrim extension before packaging.</p>
+
+  <div class="test-section">
+    <h3>1. Extension Status</h3>
+    <div id="extension-status">Checking...</div>
+  </div>
+
+  <div class="test-section">
+    <h3>2. PDF.js Library Check</h3>
+    <div id="pdfjs-status">Checking...</div>
+  </div>
+
+  <div class="test-section">
+    <h3>3. File Upload Test</h3>
+    <p>Test the file input element:</p>
+    <input type="file" id="testFileInput" accept=".pdf,application/pdf">
+    <button onclick="testFileInput()">Test File Selection</button>
+    <div id="file-test-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>4. Module Import Test</h3>
+    <button onclick="testModuleImport()">Test Converter Module</button>
+    <div id="module-test-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>5. Open Extension Popup</h3>
+    <button onclick="openExtension()">Open Extension</button>
+    <p style="color: #666; font-size: 14px;">
+      Or click the TokenTrim icon in your browser toolbar
+    </p>
+  </div>
+
+  <div class="test-section">
+    <h3>📋 Test Results</h3>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const results = [];
+
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      results.push(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+      document.getElementById('results').textContent = results.join('\n');
+      console.log(`[TokenTrim Test] ${message}`);
+    }
+
+    // Check extension status
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+      document.getElementById('extension-status').innerHTML = 
+        '<div class="status success">✓ Extension detected and running</div>';
+      log('Extension is loaded', 'success');
+    } else {
+      document.getElementById('extension-status').innerHTML = 
+        '<div class="status warning">⚠ Extension not detected. Make sure it\'s loaded in brave://extensions/</div>';
+      log('Extension not detected', 'warning');
+    }
+
+    // Check PDF.js
+    fetch(chrome.runtime.getURL('lib/pdf.js'))
+      .then(response => {
+        if (response.ok) {
+          document.getElementById('pdfjs-status').innerHTML = 
+            '<div class="status success">✓ PDF.js library found</div>';
+          log('PDF.js library is accessible', 'success');
+        } else {
+          throw new Error('PDF.js not found');
+        }
+      })
+      .catch(error => {
+        document.getElementById('pdfjs-status').innerHTML = 
+          '<div class="status error">✗ PDF.js library not found in extension</div>';
+        log('PDF.js library missing: ' + error.message, 'error');
+      });
+
+    // Test file input
+    function testFileInput() {
+      const fileInput = document.getElementById('testFileInput');
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        document.getElementById('file-test-status').innerHTML = 
+          `<div class="status success">✓ File selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)</div>`;
+        log(`File selected successfully: ${file.name}`, 'success');
+      } else {
+        document.getElementById('file-test-status').innerHTML = 
+          '<div class="status warning">⚠ No file selected. Please choose a PDF file.</div>';
+        log('No file selected', 'warning');
+      }
+    }
+
+    // Test module import
+    async function testModuleImport() {
+      try {
+        const converterPath = chrome.runtime.getURL('lib/converter.js');
+        const module = await import(converterPath);
+        
+        if (module && module.converter) {
+          document.getElementById('module-test-status').innerHTML = 
+            '<div class="status success">✓ Converter module loaded successfully</div>';
+          log('Converter module is working', 'success');
+        } else {
+          throw new Error('Converter module structure invalid');
+        }
+      } catch (error) {
+        document.getElementById('module-test-status').innerHTML = 
+          `<div class="status error">✗ Module import failed: ${error.message}</div>`;
+        log('Module import failed: ' + error.message, 'error');
+      }
+    }
+
+    // Open extension popup
+    function openExtension() {
+      alert('Click the TokenTrim icon in your browser toolbar to open the popup.');
+    }
+
+    // Listen for file input changes
+    document.getElementById('testFileInput').addEventListener('change', testFileInput);
+
+    log('Test page loaded');
+  </script>
+</body>
+</html>

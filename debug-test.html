@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenTrim Debug Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      cursor: pointer;
+    }
+    #fileInput {
+      margin: 10px 0;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>TokenTrim Extension Debug Test</h1>
+  
+  <div class="test-section">
+    <h2>1. Library Loading Test</h2>
+    <div id="libraryTest">Testing...</div>
+  </div>
+
+  <div class="test-section">
+    <h2>2. File Upload Test</h2>
+    <input type="file" id="fileInput" accept=".pdf,.docx" />
+    <button onclick="testFileUpload()">Test File Upload</button>
+    <div id="uploadTest"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>3. Extension Context Test</h2>
+    <button onclick="testExtensionContext()">Test Extension APIs</button>
+    <div id="contextTest"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>4. Converter Module Test</h2>
+    <button onclick="testConverterModule()">Test Converter</button>
+    <div id="converterTest"></div>
+  </div>
+
+  <div id="output"></div>
+
+  <!-- Load libraries -->
+  <script src="lib/mammoth.browser.min.js"></script>
+  <script src="lib/turndown.min.js"></script>
+  <script src="lib/turndown-plugin-gfm.js"></script>
+
+  <script>
+    function log(message, isError = false) {
+      const output = document.getElementById('output');
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = isError ? '❌' : '✅';
+      output.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+      console.log(message);
+    }
+
+    // Test 1: Library Loading
+    (function testLibraries() {
+      const results = [];
+      
+      if (typeof mammoth !== 'undefined') {
+        results.push('✅ Mammoth.js loaded');
+      } else {
+        results.push('❌ Mammoth.js NOT loaded');
+      }
+      
+      if (typeof TurndownService !== 'undefined') {
+        results.push('✅ Turndown loaded');
+      } else {
+        results.push('❌ Turndown NOT loaded');
+      }
+      
+      if (typeof turndownPluginGfm !== 'undefined') {
+        results.push('✅ Turndown GFM plugin loaded');
+      } else {
+        results.push('❌ Turndown GFM plugin NOT loaded');
+      }
+      
+      document.getElementById('libraryTest').innerHTML = results.join('<br>');
+      log('Library test completed');
+    })();
+
+    // Test 2: File Upload
+    function testFileUpload() {
+      const fileInput = document.getElementById('fileInput');
+      const output = document.getElementById('uploadTest');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        output.innerHTML = '<span class="error">No file selected</span>';
+        log('No file selected', true);
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const info = `
+        <div class="success">
+          <strong>File Selected:</strong><br>
+          Name: ${file.name}<br>
+          Type: ${file.type}<br>
+          Size: ${(file.size / 1024).toFixed(2)} KB<br>
+          Last Modified: ${new Date(file.lastModified).toLocaleString()}
+        </div>
+      `;
+      output.innerHTML = info;
+      log(`File selected: ${file.name} (${file.type}, ${file.size} bytes)`);
+    }
+
+    // Test 3: Extension Context
+    function testExtensionContext() {
+      const output = document.getElementById('contextTest');
+      const results = [];
+      
+      if (typeof chrome !== 'undefined' && chrome.runtime) {
+        results.push('✅ Chrome extension API available');
+        
+        if (chrome.runtime.getManifest) {
+          try {
+            const manifest = chrome.runtime.getManifest();
+            results.push(`✅ Extension: ${manifest.name} v${manifest.version}`);
+          } catch (e) {
+            results.push('❌ Cannot read manifest: ' + e.message);
+          }
+        }
+        
+        if (chrome.storage) {
+          results.push('✅ chrome.storage API available');
+        } else {
+          results.push('❌ chrome.storage NOT available');
+        }
+      } else {
+        results.push('❌ Chrome extension API NOT available (not running as extension?)');
+      }
+      
+      output.innerHTML = results.join('<br>');
+      log('Extension context test completed');
+    }
+
+    // Test 4: Converter Module
+    async function testConverterModule() {
+      const output = document.getElementById('converterTest');
+      output.innerHTML = 'Testing converter module...';
+      log('Starting converter module test...');
+      
+      try {
+        // Dynamically import the converter module
+        const converterModule = await import('./lib/converter.js');
+        
+        if (converterModule.converter) {
+          output.innerHTML = '<span class="success">✅ Converter module loaded successfully</span>';
+          log('Converter module loaded successfully');
+          
+          // Test validation
+          const testFile = new File(['test'], 'test.pdf', { type: 'application/pdf' });
+          const validation = converterModule.converter.validateFile(testFile);
+          
+          if (validation.valid) {
+            output.innerHTML += '<br>✅ File validation works';
+            log('File validation works');
+          } else {
+            output.innerHTML += '<br>❌ File validation failed: ' + validation.error;
+            log('File validation failed: ' + validation.error, true);
+          }
+        } else {
+          output.innerHTML = '<span class="error">❌ Converter not found in module</span>';
+          log('Converter not found in module', true);
+        }
+      } catch (error) {
+        output.innerHTML = '<span class="error">❌ Error loading converter: ' + error.message + '</span>';
+        log('Error loading converter: ' + error.message, true);
+        console.error('Converter test error:', error);
+      }
+    }
+
+    // Initial log
+    log('Debug test page loaded');
+  </script>
+</body>
+</html>

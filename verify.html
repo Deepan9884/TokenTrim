@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenTrim - Pre-Launch Verification</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 40px;
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fcf9f8;
+      color: #1c1b1b;
+    }
+    
+    h1 {
+      color: #4648d4;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: #464554;
+      margin-bottom: 30px;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .section h2 {
+      color: #1c1b1b;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+    
+    .check-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      background: #f6f3f2;
+    }
+    
+    .check-item.pass {
+      background: #e8f5e9;
+      border-left: 4px solid #006c49;
+    }
+    
+    .check-item.fail {
+      background: #ffdad6;
+      border-left: 4px solid #ba1a1a;
+    }
+    
+    .check-item.warning {
+      background: #fff4e5;
+      border-left: 4px solid #904900;
+    }
+    
+    .icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      font-size: 20px;
+    }
+    
+    .status {
+      flex: 1;
+      font-size: 14px;
+    }
+    
+    button {
+      background: #4648d4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 12px;
+    }
+    
+    button:hover {
+      background: #3538b0;
+    }
+    
+    button.secondary {
+      background: #f0eded;
+      color: #1c1b1b;
+    }
+    
+    button.secondary:hover {
+      background: #e5e2e1;
+    }
+    
+    .summary {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .summary-item {
+      flex: 1;
+    }
+    
+    .summary-number {
+      font-size: 36px;
+      font-weight: bold;
+    }
+    
+    .summary-label {
+      font-size: 14px;
+      color: #464554;
+    }
+    
+    .pass .summary-number { color: #006c49; }
+    .fail .summary-number { color: #ba1a1a; }
+    .warning .summary-number { color: #904900; }
+    
+    .actions {
+      margin-top: 24px;
+    }
+    
+    pre {
+      background: #f6f3f2;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 TokenTrim Pre-Launch Verification</h1>
+  <p class="subtitle">Automated checks to ensure the extension is ready to launch</p>
+
+  <div class="actions">
+    <button onclick="runVerification()">Run Verification</button>
+    <button class="secondary" onclick="showResults()">View Results</button>
+    <button class="secondary" onclick="exportReport()">Export Report</button>
+  </div>
+
+  <div id="summary" class="section" style="display: none;">
+    <h2>Verification Summary</h2>
+    <div class="summary">
+      <div class="summary-item pass">
+        <div class="summary-number" id="passCount">0</div>
+        <div class="summary-label">Passed</div>
+      </div>
+      <div class="summary-item fail">
+        <div class="summary-number" id="failCount">0</div>
+        <div class="summary-label">Failed</div>
+      </div>
+      <div class="summary-item warning">
+        <div class="summary-number" id="warnCount">0</div>
+        <div class="summary-label">Warnings</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    const checks = [
+      {
+        category: 'Core Files',
+        tests: [
+          { name: 'manifest.json exists', file: 'manifest.json' },
+          { name: 'popup.html exists', file: 'popup.html' },
+          { name: 'popup.css exists', file: 'popup.css' },
+          { name: 'popup.js exists', file: 'popup.js' },
+          { name: 'background.js exists', file: 'background.js' },
+          { name: 'content.js exists', file: 'content.js' },
+          { name: 'lib/converter.js exists', file: 'lib/converter.js' },
+        ]
+      },
+      {
+        category: 'Documentation',
+        tests: [
+          { name: 'README.md exists', file: 'README.md' },
+          { name: 'QUICKSTART.md exists', file: 'QUICKSTART.md' },
+          { name: 'LICENSE exists', file: 'LICENSE' },
+          { name: 'LAUNCH_CHECKLIST.md exists', file: 'LAUNCH_CHECKLIST.md' },
+        ]
+      },
+      {
+        category: 'User Setup Files',
+        tests: [
+          { name: 'lib/README.md exists (PDF.js instructions)', file: 'lib/README.md' },
+          { name: 'icons/README.md exists (icon instructions)', file: 'icons/README.md' },
+          { name: 'icons/generate-icons.html exists', file: 'icons/generate-icons.html' },
+        ]
+      },
+      {
+        category: 'Optional Files (Warnings)',
+        tests: [
+          { name: 'lib/pdf.js (user must add)', file: 'lib/pdf.js', optional: true },
+          { name: 'lib/pdf.worker.js (user must add)', file: 'lib/pdf.worker.js', optional: true },
+          { name: 'icons/icon16.png (can be generated)', file: 'icons/icon16.png', optional: true },
+          { name: 'icons/icon48.png (can be generated)', file: 'icons/icon48.png', optional: true },
+          { name: 'icons/icon128.png (can be generated)', file: 'icons/icon128.png', optional: true },
+        ]
+      }
+    ];
+
+    let results = { pass: 0, fail: 0, warn: 0, details: [] };
+
+    async function runVerification() {
+      results = { pass: 0, fail: 0, warn: 0, details: [] };
+      
+      for (const category of checks) {
+        const categoryResults = { category: category.category, tests: [] };
+        
+        for (const test of category.tests) {
+          const result = await checkFile(test.file);
+          const status = result 
+            ? 'pass' 
+            : (test.optional ? 'warning' : 'fail');
+          
+          if (status === 'pass') results.pass++;
+          else if (status === 'fail') results.fail++;
+          else if (status === 'warning') results.warn++;
+          
+          categoryResults.tests.push({
+            name: test.name,
+            status,
+            optional: test.optional
+          });
+        }
+        
+        results.details.push(categoryResults);
+      }
+      
+      displayResults();
+    }
+
+    async function checkFile(filename) {
+      try {
+        const response = await fetch(filename);
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function displayResults() {
+      document.getElementById('summary').style.display = 'block';
+      document.getElementById('passCount').textContent = results.pass;
+      document.getElementById('failCount').textContent = results.fail;
+      document.getElementById('warnCount').textContent = results.warn;
+      
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      
+      results.details.forEach(category => {
+        const section = document.createElement('div');
+        section.className = 'section';
+        
+        const heading = document.createElement('h2');
+        heading.textContent = category.category;
+        section.appendChild(heading);
+        
+        category.tests.forEach(test => {
+          const item = document.createElement('div');
+          item.className = `check-item ${test.status}`;
+          
+          const icon = document.createElement('div');
+          icon.className = 'icon';
+          icon.textContent = test.status === 'pass' ? '✓' : (test.status === 'fail' ? '✗' : '⚠');
+          
+          const status = document.createElement('div');
+          status.className = 'status';
+          status.textContent = test.name;
+          if (test.optional) {
+            status.textContent += ' (optional)';
+          }
+          
+          item.appendChild(icon);
+          item.appendChild(status);
+          section.appendChild(item);
+        });
+        
+        resultsDiv.appendChild(section);
+      });
+      
+      // Add final summary section
+      const finalSection = document.createElement('div');
+      finalSection.className = 'section';
+      finalSection.innerHTML = `
+        <h2>Launch Status</h2>
+        ${results.fail === 0 
+          ? '<p style="color: #006c49; font-size: 18px; font-weight: bold;">✅ READY TO LAUNCH!</p><p>All required files are present. Optional files (PDF.js, icons) can be added by users.</p>'
+          : '<p style="color: #ba1a1a; font-size: 18px; font-weight: bold;">❌ NOT READY</p><p>Some required files are missing. Please fix the failed checks above.</p>'
+        }
+        ${results.warn > 0 
+          ? '<p style="color: #904900; margin-top: 16px;">⚠ ' + results.warn + ' optional file(s) missing. Users will need to add these.</p>'
+          : ''
+        }
+      `;
+      resultsDiv.appendChild(finalSection);
+      
+      // Add next steps
+      if (results.fail === 0) {
+        const nextSteps = document.createElement('div');
+        nextSteps.className = 'section';
+        nextSteps.innerHTML = `
+          <h2>Next Steps</h2>
+          <ol style="line-height: 1.8; margin-left: 20px;">
+            <li>Users must download PDF.js and add to <code>lib/</code> folder</li>
+            <li>Users can generate icons using <code>icons/generate-icons.html</code></li>
+            <li>Load extension in Chrome: <code>chrome://extensions/</code></li>
+            <li>Enable Developer mode</li>
+            <li>Click "Load unpacked" and select the TokenTrim folder</li>
+            <li>Test with a PDF file</li>
+          </ol>
+        `;
+        resultsDiv.appendChild(nextSteps);
+      }
+    }
+
+    function showResults() {
+      if (results.details.length === 0) {
+        alert('Please run verification first');
+        return;
+      }
+      displayResults();
+    }
+
+    function exportReport() {
+      if (results.details.length === 0) {
+        alert('Please run verification first');
+        return;
+      }
+      
+      let report = '# TokenTrim Pre-Launch Verification Report\n\n';
+      report += `Date: ${new Date().toLocaleString()}\n\n`;
+      report += `## Summary\n\n`;
+      report += `- ✅ Passed: ${results.pass}\n`;
+      report += `- ❌ Failed: ${results.fail}\n`;
+      report += `- ⚠ Warnings: ${results.warn}\n\n`;
+      
+      results.details.forEach(category => {
+        report += `## ${category.category}\n\n`;
+        category.tests.forEach(test => {
+          const icon = test.status === 'pass' ? '✅' : (test.status === 'fail' ? '❌' : '⚠️');
+          report += `${icon} ${test.name}\n`;
+        });
+        report += '\n';
+      });
+      
+      report += `## Launch Status\n\n`;
+      report += results.fail === 0 
+        ? '✅ **READY TO LAUNCH!**\n\nAll required files are present.'
+        : '❌ **NOT READY**\n\nSome required files are missing.';
+      
+      const blob = new Blob([report], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'verification-report.md';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Auto-run on load
+    window.onload = () => {
+      setTimeout(runVerification, 500);
+    };
+  </script>
+</body>
+</html>

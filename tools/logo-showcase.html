@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenTrim — Brand Identity & Logo Showcase</title>
+  <style>
+    :root {
+      --crimson: #c1121f;
+      --crimson-deep: #8e0f1a;
+      --crimson-tint: #fbe9eb;
+      --crimson-tint-2: #f7dde0;
+      --ivory: #fdfbf8;
+      --paper: #ffffff;
+      --paper-2: #f8f4ef;
+      --ink: #241b16;
+      --muted: #6e6259;
+      --hairline: #e7dccf;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(36, 27, 22, 0.06);
+      --shadow-md: 0 8px 24px -6px rgba(36, 27, 22, 0.1);
+      --shadow-lg: 0 16px 40px -12px rgba(36, 27, 22, 0.14);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--ivory);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+      line-height: 1.5;
+      padding: 40px 24px 80px;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--crimson-tint);
+      color: var(--crimson);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      border: 1px solid var(--crimson-tint-2);
+    }
+
+    h1 {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+    h1 span { color: var(--crimson); }
+
+    .subtitle {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Section Styling */
+    section {
+      margin-bottom: 56px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    /* Card Grid */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .card-preview {
+      background: var(--paper-2);
+      border-radius: var(--radius-md);
+      padding: 32px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .card-preview.dark {
+      background: #191411;
+      border: 1px solid #33261f;
+    }
+
+    .card-preview img {
+      max-width: 100%;
+      height: auto;
+      max-height: 220px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-meta {
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .card-text {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    button, .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--paper-2);
+      color: var(--ink);
+      border: 1px solid var(--hairline);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    button:hover, .btn:hover {
+      background: var(--hairline);
+      color: var(--ink);
+    }
+
+    button.primary, .btn.primary {
+      background: var(--crimson);
+      color: #fff;
+      border-color: var(--crimson);
+    }
+    button.primary:hover, .btn.primary:hover {
+      background: var(--crimson-deep);
+    }
+
+    /* Swatches */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px;
+    }
+
+    .swatch {
+      background: var(--paper);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .swatch-color {
+      height: 80px;
+      width: 100%;
+    }
+
+    .swatch-body {
+      padding: 12px 14px;
+    }
+
+    .swatch-name {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .swatch-hex {
+      font-size: 12px;
+      font-family: monospace;
+      color: var(--muted);
+    }
+
+    /* Size Matrix */
+    .matrix-box {
+      background: var(--paper);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .matrix-row {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 24px 0;
+    }
+
+    .matrix-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .matrix-item span {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Brand Identity Suite</div>
+      <h1>Token<span>Trim</span> Logo Systems</h1>
+      <p class="subtitle">Official logo concepts, scalable vector production assets, and brand design tokens for TokenTrim (PDF to AI Markdown).</p>
+    </header>
+
+    <!-- 1. PRODUCTION VECTOR ASSETS -->
+    <section>
+      <div class="section-title">📦 Production Vector SVGs (Ready for Extension & App)</div>
+      <p class="section-desc">Hand-crafted, lightweight scalable vector SVGs optimized for Chrome extensions, Next.js admin dashboards, and retina displays.</p>
+
+      <div class="grid-2">
+        <!-- SVG Card 1: Squircle Icon -->
+        <div class="card">
+          <div class="card-preview">
+            <img src="../icons/logo.svg" style="width: 120px; height: 120px;" alt="TokenTrim Squircle App Icon">
+          </div>
+          <div class="card-meta">
+            <div class="card-title">Squircle App Icon (logo.svg)</div>
+            <p class="card-text">Primary application icon featuring the ivory squircle container, precision-sheared document, and dynamic crimson trim blade. Ideal for Chrome Web Store, desktop icons, and favicons.</p>
+            <div class="btn-group">
+              <a href="../icons/logo.svg" download="tokentrim-logo.svg" class="btn primary">⬇ Download SVG</a>
+              <button onclick="copySvgPath('../icons/logo.svg')">📋 Copy SVG Code</button>
+              <button onclick="exportPng('../icons/logo.svg', 512, 'tokentrim-512.png')">PNG 512px</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG Card 2: Standalone Emblem -->
+        <div class="card">
+          <div class="card-preview">
+            <img src="../icons/logo-icon.svg" style="width: 110px; height: 110px;" alt="TokenTrim Icon Mark">
+          </div>
+          <div class="card-meta">
+            <div class="card-title">Standalone Emblem (logo-icon.svg)</div>
+            <p class="card-text">Transparent, boundary-free emblem. Sharp contrast between the charcoal document chassis and glowing crimson trim laser. Perfect for UI headers, buttons, and badges.</p>
+            <div class="btn-group">
+              <a href="../icons/logo-icon.svg" download="tokentrim-emblem.svg" class="btn primary">⬇ Download SVG</a>
+              <button onclick="copySvgPath('../icons/logo-icon.svg')">📋 Copy SVG Code</button>
+              <button onclick="exportPng('../icons/logo-icon.svg', 256, 'tokentrim-emblem-256.png')">PNG 256px</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG Card 3: Horizontal Lockup -->
+        <div class="card">
+          <div class="card-preview" style="padding: 48px 24px;">
+            <img src="../icons/logo-horizontal.svg" style="max-width: 280px; width: 100%; height: auto;" alt="TokenTrim Horizontal Lockup">
+          </div>
+          <div class="card-meta">
+            <div class="card-title">Horizontal Lockup (logo-horizontal.svg)</div>
+            <p class="card-text">Complete brand wordmark combining the emblem, bold 'TokenTrim' typography with crimson accent, and the 'AI TOKEN OPTIMIZER' sub-caption. For extension headers, landing pages, and docs.</p>
+            <div class="btn-group">
+              <a href="../icons/logo-horizontal.svg" download="tokentrim-lockup.svg" class="btn primary">⬇ Download SVG</a>
+              <button onclick="copySvgPath('../icons/logo-horizontal.svg')">📋 Copy SVG Code</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG Card 4: Dark Mode Icon -->
+        <div class="card">
+          <div class="card-preview dark">
+            <img src="../icons/logo-dark.svg" style="width: 120px; height: 120px;" alt="TokenTrim Dark Mode Icon">
+          </div>
+          <div class="card-meta">
+            <div class="card-title">Dark Mode Icon (logo-dark.svg)</div>
+            <p class="card-text">Obsidian charcoal backdrop with a high-glow ruby crimson blade and illuminated token edges. Designed for dark mode themes, GitHub READMEs, and developer terminals.</p>
+            <div class="btn-group">
+              <a href="../icons/logo-dark.svg" download="tokentrim-dark.svg" class="btn primary">⬇ Download SVG</a>
+              <button onclick="copySvgPath('../icons/logo-dark.svg')">📋 Copy SVG Code</button>
+              <button onclick="exportPng('../icons/logo-dark.svg', 512, 'tokentrim-dark-512.png')">PNG 512px</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. RESOLUTION SCALING MATRIX -->
+    <section>
+      <div class="section-title">📐 Scale & Legibility Verification</div>
+      <p class="section-desc">Testing optical balance and legibility across standard Chrome extension & web sizes.</p>
+
+      <div class="matrix-box">
+        <div class="matrix-row">
+          <div class="matrix-item">
+            <img src="../icons/logo.svg" width="16" height="16" alt="16x16 icon" style="image-rendering: -webkit-optimize-contrast;">
+            <span>16×16 (Toolbar)</span>
+          </div>
+          <div class="matrix-item">
+            <img src="../icons/logo.svg" width="32" height="32" alt="32x32 icon">
+            <span>32×32 (Favicon)</span>
+          </div>
+          <div class="matrix-item">
+            <img src="../icons/logo.svg" width="48" height="48" alt="48x48 icon">
+            <span>48×48 (Extensions)</span>
+          </div>
+          <div class="matrix-item">
+            <img src="../icons/logo.svg" width="96" height="96" alt="96x96 icon">
+            <span>96×96 (Retina)</span>
+          </div>
+          <div class="matrix-item">
+            <img src="../icons/logo.svg" width="128" height="128" alt="128x128 icon">
+            <span>128×128 (Web Store)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. AI CREATIVE CONCEPTS -->
+    <section>
+      <div class="section-title">🎨 AI Creative Concept Explorations</div>
+      <p class="section-desc">High-resolution concept explorations generated for brand design inspiration.</p>
+
+      <div class="grid-3">
+        <!-- Concept 1 -->
+        <div class="card">
+          <div class="card-preview">
+            <img src="../assets/branding/concept-1-precision-blade.jpg" alt="Concept 1: Precision Blade">
+          </div>
+          <div class="card-meta">
+            <div class="card-title">Concept 1: Precision Shear</div>
+            <p class="card-text">Directly portrays an AI prompt document split along a diagonal trim angle with modular token fragments being shaved away into high-density tokens.</p>
+          </div>
+        </div>
+
+        <!-- Concept 2 -->
+        <div class="card">
+          <div class="card-preview">
+            <img src="../assets/branding/concept-2-squircle-icon.jpg" alt="Concept 2: Squircle App Icon">
+          </div>
+          <div class="card-meta">
+            <div class="card-title">Concept 2: Minimalist Squircle</div>
+            <p class="card-text">Contemporary minimalist aesthetic with clean red and charcoal negative space, evoking both a document fold and a high-speed precision trim angle.</p>
+          </div>
+        </div>
+
+        <!-- Concept 3 -->
+        <div class="card">
+          <div class="card-preview dark">
+            <img src="../assets/branding/concept-3-dark-monogram.jpg" alt="Concept 3: Obsidian Dark Monogram">
+          </div>
+          <div class="card-meta">
+            <div class="card-title">Concept 3: Laser TT Monogram</div>
+            <p class="card-text">A luxury software monogram fusing the letters 'T' & 'T' with an illuminated ruby cutting laser, tailored for dark mode tech stacks and IDE extensions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. COLOR PALETTE -->
+    <section>
+      <div class="section-title">🎨 Official Brand Color Tokens</div>
+      <p class="section-desc">The Rouge & Ivory design language used across TokenTrim.</p>
+
+      <div class="palette-grid">
+        <div class="swatch">
+          <div class="swatch-color" style="background: #c1121f;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Primary Crimson</div>
+            <div class="swatch-hex">#C1121F</div>
+          </div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-color" style="background: #8e0f1a;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Crimson Deep</div>
+            <div class="swatch-hex">#8E0F1A</div>
+          </div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-color" style="background: #241b16;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Obsidian Ink</div>
+            <div class="swatch-hex">#241B16</div>
+          </div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-color" style="background: #fdfbf8; border-bottom: 1px solid #e7dccf;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Warm Ivory</div>
+            <div class="swatch-hex">#FDFBF8</div>
+          </div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-color" style="background: #f7dde0;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Crimson Tint</div>
+            <div class="swatch-hex">#F7DDE0</div>
+          </div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-color" style="background: #6e6259;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Muted Taupe</div>
+            <div class="swatch-hex">#6E6259</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast">Copied to clipboard!</div>
+
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    async function copySvgPath(url) {
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        await navigator.clipboard.writeText(text);
+        showToast('SVG markup copied to clipboard!');
+      } catch (err) {
+        showToast('Failed to copy SVG: ' + err.message);
+      }
+    }
+
+    function exportPng(svgUrl, size, filename) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, size, size);
+
+        const a = document.createElement('a');
+        a.download = filename;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        showToast('Exported ' + filename);
+      };
+      img.src = svgUrl;
+    }
+  </script>
+</body>
+</html>

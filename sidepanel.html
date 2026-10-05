@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenTrim Panel</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header><div class="header-content"><div class="header-left"><div class="brand-container"><img src="icons/logo-icon.svg" class="logo" alt="TokenTrim" width="22" height="22" style="width: 22px; height: 22px;"><span class="headline-md brand-title">TokenTrim Panel</span></div></div></div></header>
+    <main class="gap-base">
+      <div class="options-card"><span class="label-sm options-header">Convert without leaving the page</span>
+        <p class="body-sm">Pick any file — PDF, Word, PowerPoint, image, sheet, text, HTML, EPUB — or load the pending PDF from right-click.</p>
+        <div class="tt-row"><input type="file" id="spFile" accept=".pdf,.docx,.pptx,.ppt,.png,.jpg,.jpeg,.webp,.gif,.xlsx,.xls,.csv,.tsv,.txt,.md,.html,.htm,.epub"><button class="btn btn-secondary" id="spPending" type="button">Load pending PDF</button></div>
+        <div class="tt-row"><select id="spPreset" class="tt-select"><option value="claude">Claude</option><option value="chatgpt">ChatGPT</option><option value="gemini">Gemini</option><option value="local">Local</option></select>
+        <select id="spMode" class="tt-select"><option value="lossless">Lossless</option><option value="extractive" selected>Extractive</option><option value="aggressive">Aggressive</option></select>
+        <button class="btn btn-primary" id="spConvert" type="button">Convert</button></div>
+      </div>
+      <div class="stats-card"><div class="stats-header"><span class="label-sm stats-title">Result</span><span class="label-sm" id="spStats">—</span></div>
+      <div class="code-preview"><div class="code-content"><pre id="spOut">No conversion yet.</pre></div></div>
+      <div class="tt-row"><button class="btn btn-primary" id="spCopy" type="button">Copy</button><button class="btn btn-secondary" id="spDownload" type="button">Download</button></div>
+      </div>
+    </main>
+  </div>
+  <script src="lib/mammoth.browser.min.js"></script>
+  <script src="lib/turndown.min.js"></script>
+  <script src="lib/turndown-plugin-gfm.js"></script>
+  <script src="lib/tesseract.min.js"></script>
+  <script src="sidepanel.js" type="module"></script>
+</body>
+</html>

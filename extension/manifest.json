@@ -1,0 +1,91 @@
+{
+  "manifest_version": 3,
+  "name": "TokenTrim - Any Document to Markdown",
+  "version": "1.2.0",
+  "description": "Private PDF, Word, PPT, image, sheet, text & EPUB to AI-ready Markdown with token savings for Claude, ChatGPT & Gemini.",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "scripting",
+    "downloads",
+    "sidePanel",
+    "clipboardWrite"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
+  "host_permissions": [
+    "http://localhost/*",
+    "https://*.vercel.app/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TokenTrim - Document to MD",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+T",
+        "mac": "Command+Shift+T"
+      },
+      "description": "Open TokenTrim"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "lib/converter.js",
+        "lib/pdf.js",
+        "lib/pdf.worker.js",
+        "lib/mammoth.browser.min.js",
+        "lib/turndown.min.js",
+        "lib/turndown-plugin-gfm.js",
+        "lib/tokenizer.js",
+        "lib/presets.js",
+        "lib/chunk-store.js",
+        "lib/converters/source-types.js",
+        "lib/converters/ooxml-zip.js",
+        "lib/converters/pptx-parser.js",
+        "lib/converters/sheet-parser.js",
+        "lib/converters/text-parser.js",
+        "lib/converters/image-handler.js",
+        "lib/converters/index.js",
+        "lib/ocr.js",
+        "lib/tesseract.min.js",
+        "lib/tesseract-worker.min.js",
+        "lib/tesseract-core/*",
+        "lib/tessdata/*"
+      ],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'self' data: blob: https://*.supabase.co http://localhost:* https://*.vercel.app"
+  }
+}

@@ -1,0 +1,19 @@
+# TokenTrim Admin Frontend - Netlify Configuration
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# ── Reverse-proxy /api/* requests to the Vercel backend ───────────────
+# By proxying /api/* through Netlify:
+# 1. Zero CORS issues between the admin dashboard and API backend.
+# 2. Cookies (tt_session) are treated as first-party same-origin by browsers.
+# Replace the destination below with your actual Vercel backend URL.
+[[redirects]]
+  from = "/api/*"
+  to = "https://tokentrim-backend.vercel.app/api/:splat"
+  status = 200
+  force = true

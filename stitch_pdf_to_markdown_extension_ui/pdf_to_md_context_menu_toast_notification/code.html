@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF to MD — Chrome Extension Context Toast</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#6366F1',
+              hover: '#4F46E5',
+              subtle: '#EEF2FF',
+            },
+            neutral: {
+              pure: '#FFFFFF',
+              surface: '#FAFAFA',
+              border: '#E5E7EB',
+              text: '#1A1A1A',
+              muted: '#6B7280',
+              faint: '#9CA3AF',
+            },
+            success: {
+              DEFAULT: '#10B981',
+              light: '#ECFDF5',
+              border: '#A7F3D0',
+            }
+          },
+          boxShadow: {
+            'toast': '0 10px 25px -3px rgba(0, 0, 0, 0.07), 0 4px 10px -2px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04)',
+            'toast-hover': '0 14px 30px -3px rgba(0, 0, 0, 0.10), 0 6px 14px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+          },
+          animation: {
+            'progress-indeterminate': 'progressSweep 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite',
+            'slide-in': 'toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'fade-in': 'fadeIn 0.25s ease-out forwards',
+          },
+          keyframes: {
+            progressSweep: {
+              '0%': { transform: 'translateX(-100%)' },
+              '50%': { transform: 'translateX(30%)' },
+              '100%': { transform: 'translateX(220%)' },
+            },
+            toastSlideIn: {
+              '0%': { opacity: '0', transform: 'translateY(16px) scale(0.98)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'scale(0.99)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #F3F4F6;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .toast-animated, .progress-bar-inner {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+    /* Native macOS / Chrome style backdrop glow */
+    .glass-backdrop {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 flex flex-col justify-between select-none text-neutral-text">
+
+  <!-- Simulated Chrome Browser Page Context Mockup for High-Fidelity Atmosphere -->
+  <div class="max-w-4xl mx-auto w-full mb-6">
+    <div class="flex items-center justify-between pb-3 border-b border-gray-200">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-rose-400 inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>
+        <span class="text-xs font-medium text-neutral-muted ml-2">Chrome Extension Overlay Preview — Right-Click "Convert for AI chat"</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-neutral-muted">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-white border border-gray-200 shadow-xs">
+          Viewport: Bottom-Right 320px
+        </span>
+      </div>
+    </div>
+
+    <!-- Interactive Toggle to switch states manually if desired -->
+    <div class="mt-4 flex items-center justify-center gap-2">
+      <button id="btn-show-progress" onclick="switchState('progress')" class="px-3 py-1.5 text-xs font-medium rounded-md border border-neutral-border bg-white text-neutral-text hover:bg-neutral-surface shadow-xs transition-colors">
+        State 1: Converting (Progress)
+      </button>
+      <button id="btn-show-success" onclick="switchState('success')" class="px-3 py-1.5 text-xs font-medium rounded-md border border-brand/30 bg-brand/5 text-brand hover:bg-brand/10 shadow-xs transition-colors">
+        State 2: Converted (Success CTA)
+      </button>
+      <button id="btn-show-both" onclick="switchState('both')" class="px-3 py-1.5 text-xs font-medium rounded-md border border-neutral-border bg-white text-neutral-muted hover:text-neutral-text hover:bg-neutral-surface shadow-xs transition-colors">
+        Compare Both Side-by-Side
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Showcase Container (Simulating the bottom-right corner of browser viewport) -->
+  <div class="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-end items-end pb-4 sm:pb-8">
+
+    <!-- Comparison Grid Container -->
+    <div id="cards-container" class="flex flex-col sm:flex-row items-end justify-end gap-5 w-full">
+
+      <!-- ================================================================= -->
+      <!-- STATE 1: PROGRESS TOAST (~320px)                                  -->
+      <!-- ================================================================= -->
+      <div id="toast-progress" class="toast-animated w-full max-w-[320px] bg-white/95 glass-backdrop rounded-[12px] p-3.5 shadow-toast hover:shadow-toast-hover border border-neutral-border transition-all duration-200 relative group overflow-hidden animate-slide-in">
+        
+        <!-- Header row with brand mini-icon, title, and close button -->
+        <div class="flex items-start justify-between gap-2 mb-2.5">
+          <div class="flex items-center gap-2 min-w-0">
+            <!-- Brand vector mark outline (consistent with PDF to MD popup) -->
+            <div class="w-5 h-5 rounded-md bg-brand-subtle flex items-center justify-center shrink-0 border border-brand/20">
+              <svg class="w-3 h-3 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </div>
+            
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <h4 class="text-[14px] font-semibold text-neutral-text leading-tight tracking-tight">Converting PDF...</h4>
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-brand animate-ping opacity-75"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dismiss button 'x' -->
+          <button type="button" aria-label="Dismiss notification" class="text-neutral-faint hover:text-neutral-text hover:bg-neutral-surface p-1 rounded-md transition-colors -mr-1 -mt-1 focus:outline-hidden">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Truncated Filename & metadata -->
+        <div class="flex items-center justify-between text-xs text-neutral-muted mb-3 font-normal">
+          <span class="truncate max-w-[210px] text-neutral-muted" title="quarterly_report_2025_final.pdf">quarterly_report_2025_final.pdf</span>
+          <span class="text-[11px] font-mono text-neutral-faint shrink-0 ml-1">4.2 MB</span>
+        </div>
+
+        <!-- Thin animated progress track -->
+        <div class="w-full bg-neutral-surface rounded-full h-1.5 overflow-hidden relative border border-neutral-border/60">
+          <div class="progress-bar-inner absolute top-0 left-0 bottom-0 w-2/5 bg-brand rounded-full animate-progress-indeterminate"></div>
+        </div>
+
+        <!-- Subtext indicator -->
+        <div class="flex items-center justify-between mt-2 pt-0.5 text-[11px] text-neutral-faint">
+          <span class="flex items-center gap-1">
+            <svg class="w-2.5 h-2.5 text-neutral-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Formatting for Claude & ChatGPT
+          </span>
+          <span class="font-mono text-[10px]">Extracting...</span>
+        </div>
+      </div>
+
+
+      <!-- ================================================================= -->
+      <!-- STATE 2: SUCCESS TOAST (~320px)                                   -->
+      <!-- ================================================================= -->
+      <div id="toast-success" class="toast-animated w-full max-w-[320px] bg-white/95 glass-backdrop rounded-[12px] p-3.5 shadow-toast hover:shadow-toast-hover border border-neutral-border transition-all duration-200 relative group overflow-hidden animate-slide-in">
+        
+        <!-- Header row with green checkmark icon, headline with savings badge, and dismiss -->
+        <div class="flex items-start justify-between gap-2 mb-1.5">
+          <div class="flex items-center gap-2 min-w-0">
+            <!-- Green outline checkmark (clean, non-clipart outline style matching popup) -->
+            <div class="w-5 h-5 rounded-md bg-success-light flex items-center justify-center shrink-0 border border-success-border">
+              <svg class="w-3.2 h-3.2 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            
+            <div class="min-w-0 flex items-center gap-1.5 flex-wrap">
+              <h4 class="text-[14px] font-semibold text-neutral-text leading-tight tracking-tight">
+                Converted
+              </h4>
+              <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[11px] font-medium bg-success-light text-success border border-success-border/80 leading-snug">
+                68% smaller
+              </span>
+            </div>
+          </div>
+
+          <!-- Dismiss button 'x' -->
+          <button type="button" aria-label="Dismiss notification" class="text-neutral-faint hover:text-neutral-text hover:bg-neutral-surface p-1 rounded-md transition-colors -mr-1 -mt-1 focus:outline-hidden">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Truncated Filename & token savings summary -->
+        <div class="flex items-center justify-between text-xs text-neutral-muted mb-3 font-normal pl-7">
+          <span class="truncate max-w-[170px] text-neutral-muted" title="quarterly_report_2025_final.pdf">quarterly_report_2025_final.pdf</span>
+          <span class="text-[11px] font-mono text-neutral-faint shrink-0">5.8k tokens</span>
+        </div>
+
+        <!-- Actions Row: Side-by-side "Copy" primary button + "Open in tab" ghost secondary -->
+        <div class="flex items-center gap-2 pt-0.5">
+          <!-- Primary CTA: Copy (Indigo fill, small, rounded-md) -->
+          <button id="btn-copy" onclick="triggerCopyAction(this)" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-brand hover:bg-brand-hover active:scale-[0.99] text-white text-[12px] font-medium rounded-lg shadow-xs transition-all duration-150 focus:outline-hidden">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copy-btn-text">Copy</span>
+          </button>
+
+          <!-- Secondary CTA: Open in tab (Ghost / text style) -->
+          <button type="button" class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-[12px] font-medium text-neutral-muted hover:text-neutral-text hover:bg-neutral-surface rounded-lg transition-colors focus:outline-hidden">
+            <span>Open in tab</span>
+            <svg class="w-3 h-3 text-neutral-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Auto-dismiss subtle timer indicator line (paused on hover) -->
+        <div class="mt-2.5 pt-1 flex items-center justify-between text-[10px] text-neutral-faint border-t border-neutral-border/40">
+          <span class="flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-success/80"></span>
+            Ready for clipboard
+          </span>
+          <span class="text-neutral-faint">Dismisses in 6s</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Notification Behavior & Spec Annotations (Footer notes) -->
+    <div class="mt-6 flex flex-wrap items-center justify-between text-xs text-neutral-muted w-full border-t border-gray-200/80 pt-3">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-neutral-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+          </svg>
+          Hover pauses the 6-second auto-dismiss timer
+        </span>
+        <span class="hidden sm:inline text-neutral-border">|</span>
+        <span class="hidden sm:flex items-center gap-1">
+          <span class="font-medium text-neutral-text">Dimensions:</span> 320px × ~118px
+        </span>
+      </div>
+      <div class="text-[11px] text-neutral-faint font-mono">
+        Inter 13/15px · Shadow-toast 12px r
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Interactive JavaScript for Demonstration -->
+  <script>
+    function switchState(state) {
+      const prog = document.getElementById('toast-progress');
+      const succ = document.getElementById('toast-success');
+      const btnProg = document.getElementById('btn-show-progress');
+      const btnSucc = document.getElementById('btn-show-success');
+      const btnBoth = document.getElementById('btn-show-both');
+
+      // Reset button styles
+      [btnProg, btnSucc, btnBoth].forEach(b => {
+        b.className = "px-3 py-1.5 text-xs font-medium rounded-md border border-neutral-border bg-white text-neutral-muted hover:text-neutral-text hover:bg-neutral-surface shadow-xs transition-colors";
+      });
+
+      if (state === 'progress') {
+        prog.classList.remove('hidden');
+        succ.classList.add('hidden');
+        btnProg.className = "px-3 py-1.5 text-xs font-medium rounded-md border border-brand/30 bg-brand/5 text-brand shadow-xs";
+      } else if (state === 'success') {
+        prog.classList.add('hidden');
+        succ.classList.remove('hidden');
+        btnSucc.className = "px-3 py-1.5 text-xs font-medium rounded-md border border-brand/30 bg-brand/5 text-brand shadow-xs";
+      } else {
+        prog.classList.remove('hidden');
+        succ.classList.remove('hidden');
+        btnBoth.className = "px-3 py-1.5 text-xs font-medium rounded-md border border-brand/30 bg-brand/5 text-brand shadow-xs";
+      }
+    }
+
+    function triggerCopyAction(btn) {
+      const label = document.getElementById('copy-btn-text');
+      const origText = label.innerText;
+      label.innerText = 'Copied!';
+      btn.classList.remove('bg-brand', 'hover:bg-brand-hover');
+      btn.classList.add('bg-success', 'hover:bg-success');
+      
+      setTimeout(() => {
+        label.innerText = origText;
+        btn.classList.remove('bg-success', 'hover:bg-success');
+        btn.classList.add('bg-brand', 'hover:bg-brand-hover');
+      }, 1800);
+    }
+  </script>
+</body>
+</html>

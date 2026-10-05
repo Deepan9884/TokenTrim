@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- TokenTrim Official Dark Mode Icon (Concept 1: Precision Shear) -->
+  <defs>
+    <!-- Dark obsidian background gradient -->
+    <linearGradient id="dkBg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#221b16"/>
+      <stop offset="100%" stop-color="#14100d"/>
+    </linearGradient>
+
+    <linearGradient id="dkCrimson" x1="32" y1="20" x2="96" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e61928"/>
+      <stop offset="60%" stop-color="#c1121f"/>
+      <stop offset="100%" stop-color="#a00e19"/>
+    </linearGradient>
+
+    <linearGradient id="dkInk" x1="40" y1="56" x2="96" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#382c23"/>
+      <stop offset="100%" stop-color="#1f1814"/>
+    </linearGradient>
+
+    <filter id="dkGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#e01a2b" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Dark Squircle Canvas -->
+  <rect x="2" y="2" width="124" height="124" rx="28" fill="url(#dkBg)" stroke="#3d2f26" stroke-width="1.5"/>
+
+  <!-- Centered Concept 1 Emblem -->
+  <g transform="translate(64, 64) scale(0.92) translate(-64, -64)">
+    <!-- Upper Segment (Crimson) -->
+    <path d="M 46 20 L 94 20 C 96.2 20 98 21.8 98 24 L 98 32 L 34 84 C 32.8 85 31 84.2 31 82.6 L 31 35 L 46 20 Z" 
+          fill="url(#dkCrimson)" />
+
+    <path d="M 31 35 L 46 20 L 46 33 C 46 34.1 45.1 35 44 35 Z" 
+          fill="#ff8591" />
+
+    <rect x="42" y="44" width="36" height="11" rx="2" fill="#ffffff" opacity="0.95" />
+
+    <!-- Lower Segment (Dark Body) -->
+    <path d="M 40 94 L 98 47 L 98 93 L 83 108 L 36 108 C 33.8 108 32 106.2 32 104 L 32 100 C 32 98.6 33.2 97.4 34.6 96.4 L 40 94 Z" 
+          fill="url(#dkInk)" stroke="#4a3b30" stroke-width="0.8" />
+
+    <path d="M 98 93 L 83 108 L 83 95 C 83 93.9 83.9 93 85 93 Z" 
+          fill="#ff8591" />
+
+    <rect x="54" y="60" width="12" height="34" rx="2" fill="#ffffff" opacity="0.95" />
+
+    <!-- Precision Trim Laser & Tokens -->
+    <line x1="22" y1="94" x2="106" y2="34" stroke="#ff384d" stroke-width="2.5" stroke-linecap="round" filter="url(#dkGlow)" />
+    <line x1="30" y1="88" x2="98" y2="40" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" />
+
+    <rect x="76" y="38" width="8" height="8" rx="1.5" transform="rotate(-36 80 42)" fill="#e61928" stroke="#ffffff" stroke-width="1.2" />
+    <rect x="64" y="47" width="8" height="8" rx="1.5" transform="rotate(-36 68 51)" fill="#221b16" stroke="#ffffff" stroke-width="1.2" />
+  </g>
+</svg>

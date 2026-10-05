@@ -1,0 +1,437 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenTrim Diagnostic Tool</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #1a1a1a;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .test-section {
+      margin: 25px 0;
+      padding: 20px;
+      background: #fafafa;
+      border-left: 4px solid #4CAF50;
+      border-radius: 4px;
+    }
+    
+    .test-section h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .test-result {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    
+    .success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-left: 3px solid #4CAF50;
+    }
+    
+    .error {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 3px solid #f44336;
+    }
+    
+    .warning {
+      background: #fff3e0;
+      color: #e65100;
+      border-left: 3px solid #ff9800;
+    }
+    
+    .info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border-left: 3px solid #2196F3;
+    }
+    
+    button {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background 0.2s;
+    }
+    
+    button:hover {
+      background: #1976D2;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    #fileTest {
+      margin: 15px 0;
+    }
+    
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #263238;
+      color: #aed581;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .button-group {
+      margin: 20px 0;
+    }
+    
+    .icon {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 TokenTrim Extension Diagnostic Tool</h1>
+    <p class="subtitle">This tool helps diagnose why PDF/DOCX upload isn't working</p>
+
+    <div class="button-group">
+      <button onclick="runAllTests()">▶️ Run All Tests</button>
+      <button onclick="clearOutput()">🗑️ Clear Log</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 1: Extension Environment</h2>
+      <div id="test1"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 2: Required Libraries</h2>
+      <div id="test2"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 3: File Input Element</h2>
+      <input type="file" id="fileTest" accept=".pdf,.docx" onchange="testFileSelection(this.files[0])" />
+      <div id="test3"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 4: Converter Module</h2>
+      <button onclick="testConverterModule()">Test Converter</button>
+      <div id="test4"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 5: PDF.js Worker</h2>
+      <button onclick="testPDFJS()">Test PDF.js</button>
+      <div id="test5"></div>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <!-- Load libraries (same as popup) -->
+  <script src="lib/mammoth.browser.min.js"></script>
+  <script src="lib/turndown.min.js"></script>
+  <script src="lib/turndown-plugin-gfm.js"></script>
+
+  <script>
+    let logBuffer = [];
+
+    function log(message, level = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = {
+        'info': 'ℹ️',
+        'success': '✅',
+        'error': '❌',
+        'warning': '⚠️'
+      }[level] || 'ℹ️';
+      
+      const logMessage = `[${timestamp}] ${prefix} ${message}`;
+      logBuffer.push(logMessage);
+      
+      const output = document.getElementById('output');
+      output.textContent = logBuffer.join('\n');
+      output.scrollTop = output.scrollHeight;
+      
+      console.log(logMessage);
+    }
+
+    function showResult(elementId, message, type = 'info') {
+      const element = document.getElementById(elementId);
+      const div = document.createElement('div');
+      div.className = `test-result ${type}`;
+      div.textContent = message;
+      element.appendChild(div);
+    }
+
+    function clearOutput() {
+      logBuffer = [];
+      document.getElementById('output').textContent = '';
+      ['test1', 'test2', 'test3', 'test4', 'test5'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      log('Log cleared', 'info');
+    }
+
+    // Test 1: Extension Environment
+    function testExtensionEnvironment() {
+      log('Testing extension environment...', 'info');
+      const results = document.getElementById('test1');
+      results.innerHTML = '';
+
+      // Check if running in extension context
+      if (typeof chrome !== 'undefined' && chrome.runtime) {
+        showResult('test1', '✅ Chrome extension API available', 'success');
+        log('Chrome extension API detected', 'success');
+
+        if (chrome.runtime.getManifest) {
+          try {
+            const manifest = chrome.runtime.getManifest();
+            showResult('test1', `✅ Extension: ${manifest.name} v${manifest.version}`, 'success');
+            log(`Manifest: ${manifest.name} v${manifest.version}`, 'success');
+          } catch (e) {
+            showResult('test1', '❌ Cannot read manifest: ' + e.message, 'error');
+            log('Cannot read manifest: ' + e.message, 'error');
+          }
+        }
+
+        if (chrome.storage) {
+          showResult('test1', '✅ chrome.storage API available', 'success');
+          log('chrome.storage API available', 'success');
+        } else {
+          showResult('test1', '❌ chrome.storage NOT available', 'error');
+          log('chrome.storage NOT available', 'error');
+        }
+      } else {
+        showResult('test1', '⚠️ Not running as Chrome extension (testing in regular webpage)', 'warning');
+        log('Not in extension context - running as webpage', 'warning');
+      }
+    }
+
+    // Test 2: Libraries
+    function testLibraries() {
+      log('Testing library loading...', 'info');
+      const results = document.getElementById('test2');
+      results.innerHTML = '';
+
+      const tests = [
+        { name: 'Mammoth.js', check: () => typeof mammoth !== 'undefined', var: 'mammoth' },
+        { name: 'Turndown', check: () => typeof TurndownService !== 'undefined', var: 'TurndownService' },
+        { name: 'Turndown GFM Plugin', check: () => typeof turndownPluginGfm !== 'undefined', var: 'turndownPluginGfm' }
+      ];
+
+      tests.forEach(test => {
+        if (test.check()) {
+          showResult('test2', `✅ ${test.name} loaded`, 'success');
+          log(`${test.name} loaded successfully`, 'success');
+        } else {
+          showResult('test2', `❌ ${test.name} NOT loaded`, 'error');
+          log(`${test.name} failed to load`, 'error');
+        }
+      });
+    }
+
+    // Test 3: File Selection
+    function testFileSelection(file) {
+      const results = document.getElementById('test3');
+      results.innerHTML = '';
+
+      if (!file) {
+        showResult('test3', '⚠️ No file selected', 'warning');
+        log('No file selected', 'warning');
+        return;
+      }
+
+      log(`File selected: ${file.name}`, 'info');
+      
+      const info = [
+        `Name: ${file.name}`,
+        `Type: ${file.type || 'unknown'}`,
+        `Size: ${(file.size / 1024).toFixed(2)} KB`,
+        `Last Modified: ${new Date(file.lastModified).toLocaleString()}`
+      ];
+
+      info.forEach(line => {
+        showResult('test3', '✅ ' + line, 'success');
+        log(line, 'success');
+      });
+
+      // Validate file type
+      const isPDF = file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+      const isDOCX = file.name.toLowerCase().endsWith('.docx') || file.type.includes('wordprocessingml');
+
+      if (isPDF) {
+        showResult('test3', '✅ Valid PDF file detected', 'success');
+        log('Valid PDF file', 'success');
+      } else if (isDOCX) {
+        showResult('test3', '✅ Valid DOCX file detected', 'success');
+        log('Valid DOCX file', 'success');
+      } else {
+        showResult('test3', '❌ Invalid file type (not PDF or DOCX)', 'error');
+        log('Invalid file type', 'error');
+      }
+    }
+
+    // Test 4: Converter Module
+    async function testConverterModule() {
+      log('Testing converter module...', 'info');
+      const results = document.getElementById('test4');
+      results.innerHTML = '';
+
+      try {
+        showResult('test4', 'Loading converter module...', 'info');
+        log('Attempting to load converter module', 'info');
+
+        let converterURL;
+        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
+          converterURL = chrome.runtime.getURL('lib/converter.js');
+        } else {
+          converterURL = './lib/converter.js';
+        }
+
+        log(`Converter URL: ${converterURL}`, 'info');
+
+        const converterModule = await import(converterURL);
+        
+        if (converterModule.converter) {
+          showResult('test4', '✅ Converter module loaded successfully', 'success');
+          log('Converter module loaded', 'success');
+
+          // Test validation
+          const testFile = new File(['test content'], 'test.pdf', { type: 'application/pdf', lastModified: Date.now() });
+          const validation = converterModule.converter.validateFile(testFile);
+
+          if (validation.valid) {
+            showResult('test4', '✅ File validation works', 'success');
+            log('File validation working', 'success');
+          } else {
+            showResult('test4', `⚠️ File validation failed: ${validation.error}`, 'warning');
+            log(`Validation failed: ${validation.error}`, 'warning');
+          }
+
+          // Test if converter can initialize
+          try {
+            const initialized = await converterModule.converter.initialize();
+            if (initialized) {
+              showResult('test4', '✅ Converter initialized successfully', 'success');
+              log('Converter initialized', 'success');
+            } else {
+              showResult('test4', '⚠️ Converter initialization returned false', 'warning');
+              log('Converter init returned false', 'warning');
+            }
+          } catch (initError) {
+            showResult('test4', '❌ Converter initialization failed: ' + initError.message, 'error');
+            log('Converter init error: ' + initError.message, 'error');
+          }
+        } else {
+          showResult('test4', '❌ Converter not found in module', 'error');
+          log('Converter not found in imported module', 'error');
+        }
+      } catch (error) {
+        showResult('test4', '❌ Error loading converter: ' + error.message, 'error');
+        log('Converter load error: ' + error.message, 'error');
+        log('Error stack: ' + error.stack, 'error');
+      }
+    }
+
+    // Test 5: PDF.js
+    async function testPDFJS() {
+      log('Testing PDF.js...', 'info');
+      const results = document.getElementById('test5');
+      results.innerHTML = '';
+
+      try {
+        const converterURL = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL
+          ? chrome.runtime.getURL('lib/converter.js')
+          : './lib/converter.js';
+
+        const converterModule = await import(converterURL);
+        
+        if (converterModule.converter && converterModule.converter.pdfjsLib) {
+          showResult('test5', '✅ PDF.js library accessible', 'success');
+          log('PDF.js library accessible', 'success');
+
+          const workerSrc = converterModule.converter.pdfjsLib.GlobalWorkerOptions.workerSrc;
+          if (workerSrc) {
+            showResult('test5', `✅ PDF.js worker path: ${workerSrc}`, 'success');
+            log(`Worker path set: ${workerSrc}`, 'success');
+          } else {
+            showResult('test5', '⚠️ PDF.js worker path not set', 'warning');
+            log('Worker path not set', 'warning');
+          }
+        } else {
+          showResult('test5', '❌ PDF.js library not found in converter', 'error');
+          log('PDF.js not found in converter', 'error');
+        }
+      } catch (error) {
+        showResult('test5', '❌ Error testing PDF.js: ' + error.message, 'error');
+        log('PDF.js test error: ' + error.message, 'error');
+      }
+    }
+
+    // Run all tests
+    function runAllTests() {
+      clearOutput();
+      log('Starting diagnostic tests...', 'info');
+      log('='.repeat(50), 'info');
+      
+      testExtensionEnvironment();
+      testLibraries();
+      
+      log('='.repeat(50), 'info');
+      log('Please select a PDF or DOCX file to test file input', 'info');
+      log('Click "Test Converter" and "Test PDF.js" buttons to run those tests', 'info');
+    }
+
+    // Auto-run on load
+    window.addEventListener('DOMContentLoaded', () => {
+      log('Diagnostic tool loaded', 'success');
+      log('Click "Run All Tests" to begin', 'info');
+    });
+  </script>
+</body>
+</html>

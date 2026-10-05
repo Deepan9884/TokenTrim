@@ -1,0 +1,49 @@
+{
+  "name": "tokentrim",
+  "version": "1.2.0",
+  "description": "Convert PDF, Word, PowerPoint, images, spreadsheets, text, HTML & EPUB into clean, AI-optimized Markdown",
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.js",
+    "build:extension": "node esbuild.config.js",
+    "package": "node tools/package-zip.js",
+    "build:zip": "node esbuild.config.js && node tools/package-zip.js",
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:build": "npm --prefix backend run build",
+    "backend:start": "npm --prefix backend run start",
+    "admin:dev": "npm --prefix admin-frontend run dev",
+    "admin:build": "npm --prefix admin-frontend run build",
+    "admin:start": "npm --prefix admin-frontend run start",
+    "extension:dev": "npm --prefix extension run watch",
+    "extension:build": "npm --prefix extension run build",
+    "build:all": "npm run build && npm run backend:build && npm run admin:build",
+    "dev": "node esbuild.config.js --watch",
+    "watch": "node esbuild.config.js --watch",
+    "test": "vitest run",
+    "test:e2e": "playwright test --config=tests/e2e/playwright.config.ts",
+    "test:e2e:headed": "playwright test --config=tests/e2e/playwright.config.ts --headed",
+    "test:admin": "playwright test --config=tests/admin/playwright.config.ts",
+    "e2e:fixtures": "node tests/e2e/fixtures/generate-fixtures.js",
+    "ui:shots": "node tools/capture-ui.js",
+    "benchmark": "node benchmarks/run.js",
+    "audit:permissions": "node tools/permission-audit.js",
+    "audit:network": "node tools/network-audit.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "esbuild": "^0.21.0",
+    "jszip": "^3.10.2",
+    "vitest": "^2.1.0"
+  },
+  "keywords": [
+    "chrome-extension",
+    "pdf",
+    "markdown",
+    "docx",
+    "ai"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^25.11.0"
+  }
+}

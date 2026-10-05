@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf9f8;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "error": "#ba1a1a", "on-primary-fixed-variant": "#2f2ebe", "on-error-container": "#93000a", "on-background": "#1c1b1b", "surface-bright": "#fcf9f8", "surface-tint": "#494bd6", "surface-variant": "#e5e2e1", "surface-container-high": "#eae7e7", "error-container": "#ffdad6", "secondary": "#006c49", "on-primary-fixed": "#07006c", "surface-container-low": "#f6f3f2", "on-secondary-fixed-variant": "#005236", "inverse-on-surface": "#f3f0ef", "on-surface-variant": "#464554", "on-surface": "#1c1b1b", "on-secondary": "#ffffff", "outline-variant": "#c7c4d7", "on-secondary-container": "#00714d", "secondary-container": "#6cf8bb", "secondary-fixed": "#6ffbbe", "tertiary": "#904900", "inverse-primary": "#c0c1ff", "on-error": "#ffffff", "on-tertiary-container": "#fffbff", "surface": "#fcf9f8", "primary-fixed": "#e1e0ff", "on-secondary-fixed": "#002113", "on-primary": "#ffffff", "tertiary-fixed": "#ffdcc5", "outline": "#767586", "on-tertiary-fixed-variant": "#703700", "on-tertiary": "#ffffff", "on-primary-container": "#fffbff", "primary-container": "#6063ee", "tertiary-container": "#b55d00", "primary-fixed-dim": "#c0c1ff", "inverse-surface": "#313030", "secondary-fixed-dim": "#4edea3", "surface-container-highest": "#e5e2e1", "on-tertiary-fixed": "#301400", "surface-container": "#f0eded", "background": "#fcf9f8", "surface-dim": "#dcd9d9", "primary": "#4648d4", "surface-container-lowest": "#ffffff", "tertiary-fixed-dim": "#ffb783" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-2xs": "0.125rem", "space-md": "0.75rem", "space-xl": "1.5rem", "space-xs": "0.25rem", "space-lg": "1.25rem", "space-sm": "0.5rem", "space-base": "1rem", "space-2xl": "2rem" }, "fontFamily": { "label-md": ["Inter"], "body-md": ["Inter"], "code-sm": ["JetBrains Mono"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "body-sm": ["Inter"], "headline-lg": ["Inter"], "body-lg": ["Inter"], "label-sm": ["Inter"] }, "fontSize": { "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }], "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "code-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-lg": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "body-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }] } } } };</script></head><body class="bg-surface text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-14 px-space-base flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="PDF to MD Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XVXbIzhCF766csv1YMOoPjUqQsxadQm2gl28RXin1QtDb4ZOlOHGhneFFNYn8G2Nr07g-9xFGb34RlHnCds7sJZXFdR22eaYKVJbL-ZCxMnv0jQzwpg97wxkHHY68g4TJF7O2_2i_o7M4w5PuyXD4DW-nx81Ol0grLkkjEWd1O-GVJ01Z0znbQZNxlEVZWkbtNCLagfRqe8GMeWzdcVoXriccG6z_wHGtG8n27P3pZzoToKiWDqyjWxD0"/><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md text-on-surface tracking-tight">PDF to MD</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-medium">BETA</span></div></div><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface-variant hidden">Convert</span><a aria-label="Settings" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-14 pb-20 px-space-base bg-surface flex-1"><div class="flex flex-col w-full">
+<!-- Interactive Flow State Switcher Bar (Simulates real workflow) -->
+<div class="flex items-center justify-between bg-surface-container-low p-space-xs rounded-xl mb-space-base shadow-sm">
+<button class="state-tab flex-1 py-1 px-2 rounded-lg font-label-sm text-label-sm text-on-surface font-semibold bg-surface-container-lowest shadow-sm transition-all text-center" id="btn-state-empty" onclick="switchState('empty')">
+      1. Empty
+    </button>
+<button class="state-tab flex-1 py-1 px-2 rounded-lg font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-all text-center" id="btn-state-loaded" onclick="switchState('loaded')">
+      2. Ready
+    </button>
+<button class="state-tab flex-1 py-1 px-2 rounded-lg font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-all text-center" id="btn-state-converting" onclick="switchState('converting')">
+      3. Processing
+    </button>
+<button class="state-tab flex-1 py-1 px-2 rounded-lg font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-all text-center" id="btn-state-success" onclick="switchState('success')">
+      4. Result
+    </button>
+</div>
+<!-- STATE 1: EMPTY / DROPZONE DEFAULT -->
+<div class="flex flex-col gap-space-base" id="view-empty">
+<div class="group relative cursor-pointer flex flex-col items-center justify-center p-space-xl rounded-xl bg-surface-container-low hover:bg-surface-container transition-all text-center" onclick="switchState('loaded')">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-sm mb-space-sm group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-primary text-[26px]">upload_file</span>
+</div>
+<p class="font-headline-md text-headline-md text-on-surface mb-space-2xs">Drop your PDF here</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">or click to browse from Finder</p>
+<div class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container-highest">
+<span class="material-symbols-outlined text-[13px] text-on-surface-variant">description</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Papers, decks &amp; reports up to 50MB</span>
+</div>
+</div>
+<!-- Conversion Options Preview in Idle Mode -->
+<div class="bg-surface-container-lowest p-space-base rounded-xl shadow-sm flex flex-col gap-space-sm opacity-60">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">filter_alt</span>
+<span class="font-body-sm text-body-sm text-on-surface">Strip boilerplate headers &amp; footers</span>
+</div>
+<div class="w-8 h-4 rounded-full bg-surface-container-highest flex items-center px-0.5">
+<div class="w-3 h-3 rounded-full bg-surface-container-lowest shadow-sm"></div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">table_chart</span>
+<span class="font-body-sm text-body-sm text-on-surface">Format tables for LLM token efficiency</span>
+</div>
+<div class="w-8 h-4 rounded-full bg-surface-container-highest flex items-center px-0.5">
+<div class="w-3 h-3 rounded-full bg-surface-container-lowest shadow-sm"></div>
+</div>
+</div>
+</div>
+<!-- Disabled Primary CTA -->
+<button class="w-full h-11 rounded-xl bg-surface-container-highest text-on-surface-variant font-label-md text-label-md flex items-center justify-center gap-space-xs cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Convert to Markdown</span>
+</button>
+</div>
+<!-- STATE 2: FILE LOADED & READY -->
+<div class="hidden flex flex-col gap-space-base" id="view-loaded">
+<!-- Active File Card -->
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">quarterly_earnings_report_2025.pdf</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant">14 pages • 2.4 MB</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high font-label-sm text-label-sm text-on-surface-variant uppercase">PDF</span>
+</div>
+</div>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container transition-colors shrink-0 ml-2" onclick="switchState('empty')" title="Remove file">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Extraction Mode Configuration -->
+<div class="bg-surface-container-lowest p-space-base rounded-xl shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Tuning &amp; Filters</span>
+<label class="flex items-center justify-between cursor-pointer py-1">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[17px] text-primary">cleaning_services</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Strip redundant headers &amp; footers</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Removes repeated page titles &amp; numbering</span>
+</div>
+</div>
+<input checked="" class="w-4 h-4 rounded text-primary accent-primary cursor-pointer" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between cursor-pointer py-1">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[17px] text-secondary">table_view</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Format tables for Claude/ChatGPT</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Converts complex grids to compact Markdown</span>
+</div>
+</div>
+<input checked="" class="w-4 h-4 rounded text-primary accent-primary cursor-pointer" type="checkbox"/>
+</label>
+</div>
+<!-- Active Prominent CTA -->
+<button class="w-full h-11 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-headline-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-space-xs" onclick="startConversionAnimation()">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+<span>Convert to Markdown</span>
+</button>
+</div>
+<!-- STATE 3: CONVERTING / LOADING STATE -->
+<div class="hidden flex flex-col gap-space-base" id="view-converting">
+<div class="flex flex-col p-space-xl rounded-xl bg-surface-container-lowest shadow-sm items-center text-center">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center mb-space-base">
+<span class="material-symbols-outlined text-primary text-[24px] animate-pulse">sync</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-on-surface mb-space-xs" id="progress-status-label">Extracting text &amp; formatting tables...</p>
+<span class="font-label-md text-label-md text-primary font-semibold mb-space-base" id="progress-percentage-label">64%</span>
+<!-- Soft pulsing progress indicator -->
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden relative">
+<div class="h-full bg-primary rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(70,72,212,0.4)]" id="progress-bar-fill" style="width: 64%;"></div>
+</div>
+<div class="flex items-center gap-1 mt-space-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">memory</span>
+<span class="font-label-sm text-label-sm">Local WebAssembly parsing engine</span>
+</div>
+</div>
+<div class="p-space-base rounded-xl bg-surface-container-low flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">shield</span>
+<p class="font-body-sm text-body-sm text-on-surface">Client-side processing safeguards your sensitive internal business metrics.</p>
+</div>
+</div>
+<!-- STATE 4: SUCCESS / RESULT STATE -->
+<div class="hidden flex flex-col gap-space-base" id="view-success">
+<!-- Token Optimization Savings Banner -->
+<div class="p-space-base rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold uppercase tracking-wider">Token Optimization</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+          -63% tokens saved
+        </span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm pt-1">
+<div class="flex flex-col p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Original PDF</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">18,420 tokens</span>
+</div>
+<div class="flex flex-col p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-label-sm text-label-sm text-secondary font-medium">Optimized Markdown</span>
+<span class="font-headline-sm text-headline-sm text-secondary font-semibold">6,850 tokens</span>
+</div>
+</div>
+</div>
+<!-- Markdown Snippet Preview Box -->
+<div class="relative flex flex-col rounded-xl bg-surface-container-lowest shadow-sm overflow-hidden">
+<div class="flex items-center justify-between px-space-base py-space-xs bg-surface-container">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-on-surface-variant">terminal</span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">quarterly_earnings_report.md</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">6.8 KB</span>
+</div>
+<div class="p-space-base bg-surface-container-lowest overflow-x-auto">
+<pre class="font-code-sm text-code-sm text-on-surface leading-relaxed select-all"># Q4 Financial Review &amp; Roadmap
+
+| Metric | 2024 Actual | 2025 Target |
+| :--- | :--- | :--- |
+| ARR | $42.8M | $68.0M |
+| Net Retention | 118% | 125% |
+| CAC Payback | 9.2 mo | 7.5 mo |
+
+* Generated by PDF to MD local engine</pre>
+</div>
+</div>
+<!-- Quick Target Callout -->
+<div class="flex items-center justify-center gap-1.5 py-1 text-center">
+<span class="material-symbols-outlined text-secondary text-[16px]">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Ready to paste cleanly into ChatGPT, Claude, or Cursor</span>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-headline-sm shadow-md transition-all flex items-center justify-center gap-space-xs" id="btn-copy-md" onclick="copyMarkdownAction()">
+<span class="material-symbols-outlined text-[18px]" id="copy-icon">content_copy</span>
+<span id="copy-text">Copy Markdown</span>
+</button>
+<button class="h-11 rounded-xl bg-surface-container-highest hover:bg-surface-variant text-on-surface font-headline-sm text-headline-sm transition-all flex items-center justify-center gap-space-xs" onclick="simulateDownload()">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Download .md</span>
+</button>
+</div>
+</div>
+<!-- Extension Secondary Meta Utility -->
+<div class="flex items-center justify-between mt-space-base pt-space-sm px-1">
+<button class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" onclick="switchState('empty')">
+<span class="material-symbols-outlined text-[14px]">refresh</span>
+      Convert another file
+    </button>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-1" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+      Model presets
+    </a>
+</div>
+</div>
+<script>
+  function switchState(stateName) {
+    const states = ['empty', 'loaded', 'converting', 'success'];
+    states.forEach(s => {
+      const view = document.getElementById('view-' + s);
+      const tab = document.getElementById('btn-state-' + s);
+      if (view) {
+        if (s === stateName) {
+          view.classList.remove('hidden');
+        } else {
+          view.classList.add('hidden');
+        }
+      }
+      if (tab) {
+        if (s === stateName) {
+          tab.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm', 'font-semibold');
+          tab.classList.remove('text-on-surface-variant');
+        } else {
+          tab.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm', 'font-semibold');
+          tab.classList.add('text-on-surface-variant');
+        }
+      }
+    });
+  }
+
+  function startConversionAnimation() {
+    switchState('converting');
+    const bar = document.getElementById('progress-bar-fill');
+    const percent = document.getElementById('progress-percentage-label');
+    const status = document.getElementById('progress-status-label');
+    if (!bar || !percent) return;
+
+    let p = 15;
+    bar.style.width = p + '%';
+    percent.innerText = p + '%';
+
+    const interval = setInterval(() => {
+      p += Math.floor(Math.random() * 18) + 10;
+      if (p >= 100) {
+        p = 100;
+        bar.style.width = '100%';
+        percent.innerText = '100%';
+        if (status) status.innerText = 'Finalizing Markdown structure...';
+        clearInterval(interval);
+        setTimeout(() => {
+          switchState('success');
+        }, 400);
+      } else {
+        bar.style.width = p + '%';
+        percent.innerText = p + '%';
+        if (p > 50 && status) {
+          status.innerText = 'Structuring tables & code blocks...';
+        }
+      }
+    }, 220);
+  }
+
+  function copyMarkdownAction() {
+    const copyText = document.getElementById('copy-text');
+    const copyIcon = document.getElementById('copy-icon');
+    const btn = document.getElementById('btn-copy-md');
+    
+    if (copyText && copyIcon) {
+      copyText.innerText = 'Copied!';
+      copyIcon.innerText = 'done';
+      btn.classList.add('bg-secondary');
+      
+      setTimeout(() => {
+        copyText.innerText = 'Copy Markdown';
+        copyIcon.innerText = 'content_copy';
+        btn.classList.remove('bg-secondary');
+      }, 2000);
+    }
+  }
+
+  function simulateDownload() {
+    const originalText = '# Q4 Financial Review & Roadmap\n\n| Metric | 2024 Actual | 2025 Target |\n| :--- | :--- | :--- |\n| ARR | $42.8M | $68.0M |\n| Net Retention | 118% | 125% |\n| CAC Payback | 9.2 mo | 7.5 mo |';
+    const blob = new Blob([originalText], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'quarterly_earnings_report.md';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="flex justify-around items-center h-14 px-space-base"><a aria-current="page" class="flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] transition-colors text-primary font-semibold" data-path="convert" href="#"><span class="material-symbols-outlined text-[22px]">upload_file</span><span class="font-label-sm text-label-sm">Convert</span></a><a class="flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors" data-path="history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-label-sm text-label-sm">History</span></a></div><div class="py-1 px-space-base text-center bg-surface-container-low flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[14px] text-secondary">lock</span><span class="font-label-sm text-label-sm text-on-surface-variant">Processed locally — nothing leaves your browser</span></div></nav></body></html>
