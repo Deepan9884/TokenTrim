@@ -2,23 +2,22 @@
 
 <div align="center">
 
-![TokenTrim Logo](https://raw.githubusercontent.com/Deepan9884/TokenTrim-Extension/main/assets/popup-success.png)
-
 ### **Trim Document Tokens by 60–85% Before Sending to Claude, ChatGPT, or Gemini**
 **100% Client-Side · Zero Server Uploads · Instant Local Markdown Extraction**
 
-[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/Deepan9884/TokenTrim-Extension)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/Deepan9884/TokenTrim)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-10b981?style=for-the-badge)](https://developer.chrome.com/docs/extensions/mv3/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Privacy First](https://img.shields.io/badge/Privacy-100%25_Local_WASM-e11d48?style=for-the-badge)](https://github.com/Deepan9884/TokenTrim-Extension)
+[![Privacy First](https://img.shields.io/badge/Privacy-100%25_Local_WASM-e11d48?style=for-the-badge)](https://github.com/Deepan9884/TokenTrim)
 
-[**Download Ready-to-Install ZIP**](TokenTrim-Extension.zip) • [**Quick Installation**](#-quick-installation-guide) • [**How It Works**](#-how-it-works--live-demo) • [**Supported Formats**](#-supported-formats--benchmarks) • [**Privacy Guarantee**](#-privacy--security-architecture)
+[**Download Ready-to-Install ZIP**](TokenTrim-Extension.zip) • [**Quick Installation**](#-quick-installation-guide) • [**How It Works**](#-complete-demo--workflow) • [**Supported Formats**](#-supported-formats--benchmarks) • [**Privacy Guarantee**](#-privacy--security-architecture)
 
 </div>
 
 ---
 
 ## ⚡ The Problem: LLM Token Overload
+
 When you upload raw PDFs, Word documents, presentations, or spreadsheets to LLMs (Claude, ChatGPT, Gemini, DeepSeek):
 1. **Bloated Context Windows**: Headers, footers, page numbers, duplicate XML wrappers, and decorative tables consume thousands of unnecessary tokens.
 2. **Context Degradation ("Lost in the Middle")**: Long, noisy documents degrade LLM reasoning and cause hallucinations.
@@ -29,90 +28,86 @@ When you upload raw PDFs, Word documents, presentations, or spreadsheets to LLMs
 
 ---
 
-## 📸 Visual Walkthrough & Demo
+## 🎮 Complete Demo & Workflow
 
-| 1. Drag & Drop Document | 2. Instant Local Processing | 3. High-Density AI Markdown |
-|:---:|:---:|:---:|
-| <img src="assets/popup-dropzone.png" width="280" alt="Dropzone" /> | <img src="assets/popup-converting.png" width="280" alt="Converting" /> | <img src="assets/popup-success.png" width="280" alt="Success" /> |
-| *Supports PDF, Word, Excel, Slides & Images* | *Client-Side WASM / OCR Parser* | *60–85% tokens saved, 1-click copy* |
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              TOKEN TRIM EXTENSION                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [ Preset: Claude 3.5 / Sonnet ▼ ]   [ Range: All Pages (e.g. 1-3, 5) ]    │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │                    DRAG & DROP DOCUMENT HERE                          │  │
+│  │         PDF, DOCX, PPTX, XLSX, CSV, Images (OCR), HTML, EPUB          │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                      │                                      │
+│                                      ▼                                      │
+│  [ In-Browser WASM Parser & Noise Cleaner: Extracted in 280ms ]             │
+│                                      │                                      │
+│                                      ▼                                      │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │  STATUS: CONVERSION SUCCESS                                           │  │
+│  │  Original Tokens : 8,420                                              │  │
+│  │  Cleaned Tokens  : 2,150                                              │  │
+│  │  Token Savings   : 6,270 (74.5% SAVED)                                │  │
+│  │                                                                       │  │
+│  │  [ 📋 Copy Clean Markdown ]     [ 💾 Save Document ]     [ 🔄 Reset ] │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+       [ Paste directly into Claude / ChatGPT / Gemini / DeepSeek ]
+```
+
+### Step-by-Step Demo:
+1. **Open Extension**: Click the TokenTrim extension icon in your browser toolbar.
+2. **Select Target Model**:
+   * **Claude**: Structured with semantic tags and hierarchical heading preservation.
+   * **GPT-4o**: Compact bulleted markdown with token minimization.
+   * **Gemini**: Standard structural markdown with normalized table formatting.
+   * **DeepSeek / Open Models**: Maximum density stripped of all decorative whitespace.
+3. **Drop Document**: Drop any PDF, Word document, slide deck, spreadsheet, or screenshot.
+4. **Instant In-Browser Conversion**: TokenTrim parses the document in milliseconds using local WebAssembly.
+5. **Live Token Savings**: View your exact token count before and after reduction.
+6. **Copy & Use**: Click **Copy Clean Markdown** to paste directly into your chat prompt.
 
 ---
 
 ## 🚀 Quick Installation Guide
 
-No developer tools or terminal commands required! You can install TokenTrim in 30 seconds:
+Install TokenTrim in 30 seconds — no build tools, terminal, or Node.js required:
 
 ### Step 1: Download the Extension ZIP
-Download [`TokenTrim-Extension.zip`](TokenTrim-Extension.zip) directly from this repository (or from the [Releases](https://github.com/Deepan9884/TokenTrim-Extension/releases) page).
+Download [`TokenTrim-Extension.zip`](TokenTrim-Extension.zip) directly from the root of this repository.
 
-### Step 2: Unzip the Archive
-Extract `TokenTrim-Extension.zip` into a folder on your computer (for example, `Downloads/TokenTrim-Extension`).
+### Step 2: Unzip the File
+Extract `TokenTrim-Extension.zip` into a folder on your computer (e.g. `Downloads/TokenTrim-Extension`).
 
 ### Step 3: Load into Your Chromium Browser
 
 #### For Google Chrome:
-1. Open Chrome and go to `chrome://extensions` in the address bar.
-2. In the top-right corner, switch the **Developer mode** toggle to **ON**.
+1. Open Chrome and navigate to `chrome://extensions` in the address bar.
+2. In the top-right corner, toggle **Developer mode** to **ON**.
 3. In the top-left corner, click **Load unpacked**.
 4. Select the extracted `TokenTrim-Extension` folder.
 
 #### For Brave Browser:
-1. Go to `brave://extensions`.
-2. Enable **Developer mode** in the top right.
+1. Navigate to `brave://extensions`.
+2. Enable **Developer mode** in the top-right corner.
 3. Click **Load unpacked** and select the extracted folder.
 
 #### For Microsoft Edge:
-1. Go to `edge://extensions`.
-2. Toggle on **Developer mode** (left sidebar).
+1. Navigate to `edge://extensions`.
+2. Toggle on **Developer mode** in the left sidebar.
 3. Click **Load unpacked** and select the extracted folder.
 
 #### For Arc Browser:
-1. Go to `arc://extensions`.
+1. Navigate to `arc://extensions`.
 2. Enable **Developer mode**.
 3. Click **Load unpacked** and select the extracted folder.
 
-### Step 4: Pin TokenTrim
-Click the puzzle piece icon (Extensions) in your browser toolbar and click the **Pin** icon next to **TokenTrim**.
-
----
-
-## 🎮 Complete Demo Walkthrough
-
-Here is how you use TokenTrim on any web page (ChatGPT, Claude, Google Docs, etc.):
-
-```text
-[ Raw PDF / DOCX / Image ]
-            │
-            ▼
-┌──────────────────────────────────────┐
-│       TokenTrim Extension Popup      │
-│  • Select AI Model Preset            │
-│  • Choose Page Range (Optional)      │
-│  • Local WASM / OCR Parser           │
-└──────────────────────────────────────┘
-            │
-            ▼  (60% - 85% Token Reduction)
-┌──────────────────────────────────────┐
-│     Clean Prompt-Ready Markdown      │
-│  • Strip headers, footers & noise    │
-│  • Clean markdown tables             │
-│  • One-click "Copy Clean Markdown"   │
-└──────────────────────────────────────┘
-            │
-            ▼
-[ Paste directly into Claude / ChatGPT / Gemini ]
-```
-
-1. **Open TokenTrim**: Click the TokenTrim extension icon in your browser toolbar.
-2. **Select AI Preset**:
-   * **Claude**: Optimized for hierarchical headers and XML tags.
-   * **GPT-4o**: Compact bulleted markdown with token minimization.
-   * **Gemini**: Clean structural markdown with standard table layout.
-   * **DeepSeek / Open Models**: High-density markdown stripped of any decorative whitespace.
-3. **Drop Your File**: Drag any document into the drop zone (or click to browse).
-4. **Choose Optional Page Range**: Specify exact pages (e.g. `1-3, 7`) to convert only relevant sections.
-5. **Instant Local Conversion**: In under 1 second, TokenTrim extracts headings, tables, code blocks, lists, and metadata.
-6. **Copy & Paste**: Click **Copy Clean Markdown** and paste it directly into your AI prompt!
+### Step 4: Pin to Toolbar
+Click the Extensions puzzle icon in your browser toolbar and click **Pin** next to **TokenTrim**. You're ready to go!
 
 ---
 
@@ -131,7 +126,7 @@ Here is how you use TokenTrim on any web page (ChatGPT, Claude, Google Docs, etc
 
 ## 🔒 Privacy & Security Architecture
 
-TokenTrim was built with a strict **Privacy-First, Zero-Leakage** guarantee:
+TokenTrim was built with a strict **Privacy-First, Zero-Data-Leakage** guarantee:
 
 * 🛡️ **100% Client-Side Processing**: Document conversion and optical character recognition happen exclusively inside your browser's V8 engine using WebAssembly (WASM).
 * 🚫 **No Document Uploads**: Your file contents, text, images, and tables are **never** uploaded to any backend server or external cloud API.
@@ -161,6 +156,6 @@ Yes. TokenTrim includes built-in Optical Character Recognition (OCR) powered by 
 
 ## 📄 License
 
-Distributed under the **MIT License**. See `LICENSE` for details.
+Distributed under the **MIT License**.
 
 Developed with ❤️ for developers, researchers, and AI power-users.
